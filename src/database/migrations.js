@@ -1,0 +1,70 @@
+const migrations = [
+  `
+    CREATE TABLE IF NOT EXISTS leads (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      company_name TEXT NOT NULL,
+      cnpj TEXT,
+      website TEXT,
+      phone TEXT,
+      whatsapp TEXT,
+      city TEXT,
+      state TEXT,
+      segment TEXT,
+      description TEXT,
+      company_size TEXT,
+      score INTEGER NOT NULL CHECK (score BETWEEN 0 AND 100),
+      score_reason TEXT NOT NULL,
+      opportunity TEXT,
+      approach_suggestion TEXT,
+      status TEXT NOT NULL DEFAULT 'NEW' CHECK (status IN ('NEW', 'CONTACTED', 'INTERESTED', 'DISCARDED', 'CLIENT')),
+      discovered_at TEXT NOT NULL,
+      contacted_at TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_leads_score ON leads(score DESC);
+    CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+    CREATE INDEX IF NOT EXISTS idx_leads_cnpj ON leads(cnpj);
+    CREATE INDEX IF NOT EXISTS idx_leads_website ON leads(website);
+    CREATE INDEX IF NOT EXISTS idx_leads_name_city ON leads(company_name, city);
+
+    CREATE TABLE IF NOT EXISTS content_ideas (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      platform TEXT NOT NULL,
+      format TEXT NOT NULL,
+      topic TEXT NOT NULL,
+      objective TEXT NOT NULL,
+      audience TEXT NOT NULL,
+      hook TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      main_points TEXT NOT NULL,
+      cta TEXT NOT NULL,
+      relevance_reason TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'SUGGESTED' CHECK (status IN ('SUGGESTED', 'APPROVED', 'DISCARDED', 'CREATED', 'PUBLISHED')),
+      generated_at TEXT NOT NULL,
+      published_at TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_content_status ON content_ideas(status);
+    CREATE INDEX IF NOT EXISTS idx_content_generated_at ON content_ideas(generated_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_content_title ON content_ideas(title);
+  `
+];
+
+export function runMigrations(database) {
+  database.exec('PRAGMA foreign_keys = ON;');
+  database.exec('PRAGMA journal_mode = WAL;');
+  database.exec('BEGIN;');
+
+  try {
+    for (const migration of migrations) database.exec(migration);
+    database.exec('COMMIT;');
+  } catch (error) {
+    database.exec('ROLLBACK;');
+    throw error;
+  }
+}

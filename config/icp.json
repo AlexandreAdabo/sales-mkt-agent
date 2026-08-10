@@ -1,0 +1,44 @@
+{
+  "regions": [
+    "Mauá - SP",
+    "Santo André - SP",
+    "São Bernardo do Campo - SP",
+    "São Caetano do Sul - SP"
+  ],
+  "companySize": {
+    "minEmployees": 10,
+    "maxEmployees": 300
+  },
+  "segments": [
+    "indústria",
+    "logística",
+    "distribuidora",
+    "serviços B2B",
+    "varejo"
+  ],
+  "services": [
+    "automação de processos",
+    "integração de sistemas",
+    "desenvolvimento sob demanda",
+    "manutenção de sistemas",
+    "modernização de sistemas legados",
+    "APIs",
+    "ERP",
+    "sistemas internos"
+  ],
+  "positiveSignals": [
+    "processos manuais",
+    "uso intenso de planilhas",
+    "sistemas legados",
+    "múltiplos sistemas sem integração",
+    "operação administrativa relevante",
+    "empresa em crescimento",
+    "processos repetitivos"
+  ],
+  "negativeSignals": [
+    "empresa encerrada",
+    "empresa sem presença digital mínima",
+    "profissional autônomo",
+    "microempresa muito pequena sem operação relevante"
+  ]
+}
