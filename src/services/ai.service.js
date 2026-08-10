@@ -40,3 +40,24 @@ export function createAIService(aiClient) {
 
   return { analyzeLead, generateContentIdeas };
 }
+
+export async function chat(message) {
+  if (!message?.trim()) {
+    throw new Error('Mensagem não informada.');
+  }
+
+  return createResponse({
+    instructions: `
+Você é o assistente do projeto Sales MKT Agent.
+
+Seu objetivo é auxiliar um desenvolvedor na prospecção comercial,
+análise de empresas, automação de processos e geração de conteúdo.
+
+Responda sempre em português do Brasil.
+
+Seja objetivo, técnico e comercial quando necessário.
+    `.trim(),
+
+    input: message
+  });
+}
