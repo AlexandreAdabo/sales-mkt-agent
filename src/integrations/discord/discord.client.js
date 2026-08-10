@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Events, GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { logger } from '../../utils/logger.js';
 
 const MESSAGE_LIMIT = 1900;
@@ -47,7 +47,9 @@ export function createDiscordClient(env) {
       await sendMessage(env.discordAgentChannelId, response);
     } catch (error) {
       logger.error('Erro ao processar mensagem do canal #agente', error);
-      await sendLog(`Erro no canal #agente: ${error.message}`);
+      await sendLog(`Erro no canal #agente: ${error.message}`).catch((logError) => {
+        logger.error('Não foi possível enviar o erro ao canal #logs', logError);
+      });
     }
   });
 
@@ -59,13 +61,24 @@ export function createDiscordClient(env) {
     });
 
     const guild = await client.guilds.fetch(env.discordGuildId);
-    const channelIds = [
-      env.discordLeadsChannelId,
-      env.discordContentChannelId,
-      env.discordAgentChannelId,
-      env.discordLogsChannelId
-    ];
-    await Promise.all(channelIds.map((channelId) => guild.channels.fetch(channelId)));
+    const channels = [
+      ['dashboard', env.discordDashboardChannelId],
+      ['leads', env.discordLeadsChannelId],
+      ['conteúdo', env.discordContentChannelId],
+      ['agente', env.discordAgentChannelId],
+      ['logs', env.discordLogsChannelId]
+    ].filter(([, channelId]) => channelId);
+
+    for (const [name, channelId] of channels) {
+      const channel = await guild.channels.fetch(channelId);
+      if (!channel?.isTextBased() || typeof channel.send !== 'function') {
+        throw new Error(`Canal #${name} inválido ou sem suporte a texto`);
+      }
+      const permissions = guild.members.me.permissionsIn(channel);
+      if (!permissions.has([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages])) {
+        throw new Error(`O bot não possui permissão para visualizar e enviar mensagens em #${name}`);
+      }
+    }
     logger.info(`Discord conectado como ${client.user.tag}`);
   }
 

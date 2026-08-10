@@ -90,13 +90,14 @@ DATABASE_PATH=./data/sales-mkt-agent.sqlite
 
 AI_PROVIDER=mock
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-5.6-luna
+OPENAI_MODEL=gpt-5-mini
 
 SEARCH_PROVIDER=mock
 
 DISCORD_ENABLED=true
 DISCORD_TOKEN=
 DISCORD_GUILD_ID=
+DISCORD_DASHBOARD_CHANNEL_ID=
 DISCORD_LEADS_CHANNEL_ID=
 DISCORD_CONTENT_CHANNEL_ID=
 DISCORD_AGENT_CHANNEL_ID=
@@ -104,6 +105,8 @@ DISCORD_LOGS_CHANNEL_ID=
 ```
 
 Com `AI_PROVIDER=mock`, a chave da OpenAI não é obrigatória. Para usar a API real, troque para `AI_PROVIDER=openai`, informe `OPENAI_API_KEY` e escolha `OPENAI_MODEL`. A integração usa saída estruturada com JSON Schema e uma segunda validação local.
+
+Informe tokens e chaves sem aspas ou delimitadores como `<` e `>`. O processo rejeita configurações com esses caracteres antes de acessar a API.
 
 Para uma validação inteiramente local, defina `DISCORD_ENABLED=false`. Nesse modo os relatórios são persistidos e registrados no console, mas não enviados.
 
@@ -115,10 +118,17 @@ O ICP é lido em toda execução a partir de `config/icp.json`; alterações nã
 2. Ative o intent privilegiado **Message Content Intent**, necessário para o canal `#agente`.
 3. Convide o bot para o servidor com permissões para ver canais, ler histórico e enviar mensagens.
 4. Crie os canais `#dashboard`, `#leads`, `#conteudo`, `#agente` e `#logs`.
-5. Ative o modo desenvolvedor do Discord, copie o ID do servidor e os IDs dos quatro canais usados no `.env`.
+5. Ative o modo desenvolvedor do Discord, copie o ID do servidor e os IDs dos cinco canais usados no `.env`.
 6. Preencha o token e os IDs. O token nunca deve ser versionado.
 
 O canal `#dashboard` está reservado para uma etapa futura. No `#agente`, o MVP já responde a consultas como `me mostre o lead 15` e `me mostre a ideia 8`.
+
+Valide as credenciais sem publicar mensagens:
+
+```bash
+npm run test:openai
+npm run test:discord
+```
 
 ## SQLite e primeiro teste
 
@@ -172,7 +182,7 @@ Na primeira execução, o mock gera 10 leads e 3 ideias. Leads já persistidos n
 
 O `OutboundAgent` carrega o ICP, busca candidatos, elimina registros conhecidos, pesquisa cada candidato, solicita análise e score, seleciona os dez melhores, persiste e envia ao Discord. A deduplicação prioriza CNPJ, depois domínio do site e por fim nome+cidade.
 
-O `ContentAgent` carrega o ICP e até cem ideias anteriores, gera três propostas estruturadas, elimina repetições, persiste e envia ao Discord. A estrutura permite acrescentar dores agregadas dos leads ao contexto futuramente.
+O `ContentAgent` carrega o ICP e até mil ideias anteriores, gera três propostas estruturadas, elimina repetições, persiste e envia ao Discord. A estrutura permite acrescentar dores agregadas dos leads ao contexto futuramente.
 
 O `RouterAgent` concentra a interação no `#agente`. Ele já consulta registros por ID e é o ponto de extensão para atualizar status, aprofundar pesquisas e desenvolver abordagens ou conteúdos.
 

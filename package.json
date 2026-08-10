@@ -14,7 +14,9 @@
     "job:leads": "node src/scripts/run-leads.js",
     "job:content": "node src/scripts/run-content.js",
     "db:init": "node src/scripts/init-db.js",
-    "test": "node --test"
+    "test:openai": "node scripts/test-openai.js",
+    "test:discord": "node scripts/test-discord.js",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "discord.js": "^14.22.1",

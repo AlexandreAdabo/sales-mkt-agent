@@ -11,7 +11,7 @@ function testEnv(databasePath) {
     databasePath,
     aiProvider: 'mock',
     openaiApiKey: null,
-    openaiModel: 'gpt-5.6-luna',
+    openaiModel: 'gpt-5-mini',
     searchProvider: 'mock',
     discordEnabled: false
   };
