@@ -41,7 +41,7 @@ export function createAIService(aiClient) {
     const template = await loadPrompt('content-ideas.prompt.md');
     const input = {
       icp,
-      previousIdeas: previousIdeas.map(({ title, platform, format, topic }) => ({ title, platform, format, topic }))
+      previousIdeas: previousIdeas.map(({ front, title, platform, format, topic }) => ({ front, title, platform, format, topic }))
     };
     const value = await aiClient.generateStructured({
       schemaName: 'content_ideas',

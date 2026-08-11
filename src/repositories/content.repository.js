@@ -5,9 +5,9 @@ function normalize(value) {
 export function createContentRepository(database) {
   const insertStatement = database.prepare(`
     INSERT INTO content_ideas (
-      title, platform, format, topic, objective, audience, hook, summary,
+      front, title, platform, format, topic, objective, audience, hook, summary,
       main_points, cta, relevance_reason, status, generated_at, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SUGGESTED', ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SUGGESTED', ?, ?, ?)
   `);
 
   function listRecent(limit = 100) {
@@ -25,7 +25,7 @@ export function createContentRepository(database) {
 
     return previousIdeas.some((previous) => (
       normalize(previous.title) === title
-      || (normalize(previous.topic) === topic && normalize(previous.format) === format)
+      || (previous.front === idea.front && normalize(previous.topic) === topic && normalize(previous.format) === format)
     ));
   }
 
@@ -37,6 +37,7 @@ export function createContentRepository(database) {
     try {
       for (const idea of ideas) {
         const result = insertStatement.run(
+          idea.front,
           idea.title,
           idea.platform,
           idea.format,
@@ -71,13 +72,14 @@ export function createContentRepository(database) {
     return database.prepare(`
       SELECT * FROM content_ideas
       WHERE (? IS NULL OR title LIKE '%' || ? || '%' COLLATE NOCASE
-        OR topic LIKE '%' || ? || '%' COLLATE NOCASE)
+        OR topic LIKE '%' || ? || '%' COLLATE NOCASE
+        OR front LIKE '%' || ? || '%' COLLATE NOCASE)
         AND (? IS NULL OR status = ?)
         AND (? IS NULL OR platform LIKE ? COLLATE NOCASE)
       ORDER BY generated_at DESC
       LIMIT ?
     `).all(
-      normalizedQuery, normalizedQuery, normalizedQuery,
+      normalizedQuery, normalizedQuery, normalizedQuery, normalizedQuery,
       status, status,
       platform, platform,
       Math.min(Math.max(limit, 1), 20)

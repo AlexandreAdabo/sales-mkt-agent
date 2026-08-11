@@ -203,7 +203,7 @@ O SearchClient mock possui 25 empresas fictícias com portes, sinais e qualidade
 
 O `OutboundAgent` carrega o ICP, busca candidatos, elimina registros conhecidos, pesquisa cada candidato, solicita análise e score, seleciona os dez melhores, persiste e envia ao Discord. A deduplicação prioriza CNPJ, depois domínio do site e por fim nome+cidade.
 
-O `ContentAgent` carrega o ICP e até mil ideias anteriores, gera três propostas estruturadas, elimina repetições, persiste e envia ao Discord. A estrutura permite acrescentar dores agregadas dos leads ao contexto futuramente.
+O `ContentAgent` carrega o ICP e até mil ideias anteriores, gera uma proposta para cada frente — DoGym, Quanto Deu AI e Profissional/Freelance —, elimina repetições, persiste e envia ao Discord. Cada ideia mantém sua frente identificada no SQLite e na mensagem do canal `#conteudo`.
 
 O `RouterAgent` concentra a interação no `#agente`. Consultas diretas por ID continuam disponíveis, e perguntas livres usam a OpenAI com ferramentas locais somente leitura para pesquisar leads e ideias. O histórico fica no SQLite e não é armazenado pela OpenAI.
 

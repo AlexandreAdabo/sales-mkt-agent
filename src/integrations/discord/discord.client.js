@@ -147,6 +147,7 @@ function createDisabledDiscordClient() {
 function formatIdea(idea) {
   return [
     `**#${idea.id} — ${idea.title}**`,
+    `Frente: **${idea.front}**`,
     `${idea.platform} | ${idea.format} | ${idea.topic}`,
     `Objetivo: ${idea.objective}`,
     `Público: ${idea.audience}`,

@@ -5,6 +5,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { createApp } from '../src/app.js';
 import { createContainer } from '../src/bootstrap.js';
+import { validateContentIdeas } from '../src/schemas/content.schema.js';
 
 function testEnv(databasePath) {
   return {
@@ -48,6 +49,12 @@ test('jobs mock persistem resultados e não reapresentam leads', async () => {
     assert.equal(leads.length, 10);
     assert.equal(ideas.length, 3);
     assert.equal(moreIdeas.length, 3);
+    assert.deepEqual(ideas.map((idea) => idea.front).sort(), ['DoGym', 'Profissional/Freelance', 'Quanto Deu AI']);
+    assert.deepEqual(moreIdeas.map((idea) => idea.front).sort(), ['DoGym', 'Profissional/Freelance', 'Quanto Deu AI']);
+    assert.throws(
+      () => validateContentIdeas({ ideas: [ideas[0], ideas[0], ideas[0]] }),
+      /exatamente uma ideia para cada frente/
+    );
     assert.notDeepEqual(moreIdeas.map((idea) => idea.title), ideas.map((idea) => idea.title));
     assert.equal(secondBatch.length, 10);
     assert.equal(remainingLeads.length, 2);

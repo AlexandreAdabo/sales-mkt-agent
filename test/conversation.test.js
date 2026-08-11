@@ -37,6 +37,7 @@ function fixture() {
     approachSuggestion: 'Conversa consultiva'
   }]);
   const [idea] = contentRepository.saveMany([{
+    front: 'Profissional/Freelance',
     title: 'Automação prática',
     platform: 'LinkedIn',
     format: 'carrossel',

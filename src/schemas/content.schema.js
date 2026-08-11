@@ -1,4 +1,5 @@
 const ideaProperties = {
+  front: { type: 'string', enum: ['DoGym', 'Quanto Deu AI', 'Profissional/Freelance'] },
   title: { type: 'string' },
   platform: { type: 'string' },
   format: { type: 'string' },
@@ -45,6 +46,12 @@ export function validateContentIdeas(value) {
     if (!Array.isArray(idea.mainPoints) || idea.mainPoints.some((item) => typeof item !== 'string')) {
       throw new Error('Campo inválido na ideia de conteúdo: mainPoints');
     }
+  }
+
+  const fronts = value.ideas.map((idea) => idea.front);
+  const expectedFronts = ['DoGym', 'Quanto Deu AI', 'Profissional/Freelance'];
+  if (expectedFronts.some((front) => fronts.filter((value) => value === front).length !== 1)) {
+    throw new Error('A IA deve retornar exatamente uma ideia para cada frente de conteúdo');
   }
 
   return value.ideas;

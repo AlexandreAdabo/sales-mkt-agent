@@ -46,6 +46,7 @@ const migrations = [
 
     CREATE TABLE IF NOT EXISTS content_ideas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      front TEXT,
       title TEXT NOT NULL,
       platform TEXT NOT NULL,
       format TEXT NOT NULL,
@@ -94,6 +95,8 @@ export function runMigrations(database) {
     if (!leadColumns.has('source')) database.exec('ALTER TABLE leads ADD COLUMN source TEXT');
     if (!leadColumns.has('source_url')) database.exec('ALTER TABLE leads ADD COLUMN source_url TEXT');
     if (!leadColumns.has('research_data')) database.exec('ALTER TABLE leads ADD COLUMN research_data TEXT');
+    const contentColumns = new Set(database.prepare('PRAGMA table_info(content_ideas)').all().map((column) => column.name));
+    if (!contentColumns.has('front')) database.exec('ALTER TABLE content_ideas ADD COLUMN front TEXT');
     database.exec('COMMIT;');
   } catch (error) {
     database.exec('ROLLBACK;');

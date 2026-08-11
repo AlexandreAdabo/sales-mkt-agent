@@ -51,6 +51,7 @@ function serializeContent(idea) {
   if (!idea) return null;
   return {
     id: idea.id,
+    front: idea.front,
     title: idea.title,
     platform: idea.platform,
     format: idea.format,
@@ -88,6 +89,7 @@ function formatContent(idea, id) {
   if (!idea) return `Ideia ${id} não encontrada.`;
   return [
     `**Ideia #${idea.id} — ${idea.title}**`,
+    `Frente: ${idea.front ?? 'não informada'}`,
     `${idea.platform} | ${idea.format} | Status: ${idea.status}`,
     `Gancho: ${idea.hook}`,
     `Resumo: ${idea.summary}`,
