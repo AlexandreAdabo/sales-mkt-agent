@@ -3,7 +3,7 @@ import { logger } from '../../utils/logger.js';
 
 const MESSAGE_LIMIT = 1900;
 
-function splitMessage(content) {
+export function splitMessage(content) {
   if (content.length <= MESSAGE_LIMIT) return [content];
   const chunks = [];
   let current = '';
