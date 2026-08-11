@@ -9,6 +9,8 @@
     "minEmployees": 10,
     "maxEmployees": 300
   },
+  "minimumScore": 70,
+  "dailyLeadLimit": 10,
   "segments": [
     "indústria",
     "logística",

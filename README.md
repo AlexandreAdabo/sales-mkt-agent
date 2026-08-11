@@ -111,6 +111,7 @@ Informe tokens e chaves sem aspas ou delimitadores como `<` e `>`. O processo re
 Para uma validação inteiramente local, defina `DISCORD_ENABLED=false`. Nesse modo os relatórios são persistidos e registrados no console, mas não enviados.
 
 O ICP é lido em toda execução a partir de `config/icp.json`; alterações não exigem recompilar a aplicação.
+`minimumScore` define o corte mínimo de aderência e `dailyLeadLimit` limita quantos leads são persistidos e apresentados em cada execução.
 
 ## Configuração do Discord
 
@@ -185,7 +186,7 @@ npm run job:leads
 npm run job:content
 ```
 
-Na primeira execução, o mock gera 10 leads e 3 ideias. Leads já persistidos não são reapresentados. As ideias mock alternam temas e recebem edições posteriores para que o agendamento continue funcional sem repetir registros.
+O SearchClient mock possui 25 empresas fictícias com portes, sinais e qualidade variados. Cada execução persiste até `dailyLeadLimit` leads que alcancem `minimumScore`; leads já persistidos não são reapresentados. As ideias mock alternam temas e recebem edições posteriores para que o agendamento continue funcional sem repetir registros.
 
 ## Como os agents funcionam
 

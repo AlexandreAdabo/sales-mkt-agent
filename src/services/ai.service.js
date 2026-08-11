@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { contentIdeasJsonSchema, validateContentIdeas } from '../schemas/content.schema.js';
 import { leadAnalysisJsonSchema, validateLeadAnalysis } from '../schemas/lead.schema.js';
+import { validateLeadScore } from '../validators/lead-score.validator.js';
 
 async function loadPrompt(fileName) {
   return readFile(path.resolve('prompts', fileName), 'utf8');
@@ -20,7 +21,7 @@ export function createAIService(aiClient) {
       input,
       prompt: `${researchPrompt}\n\n${scorePrompt}\n\nDADOS:\n${JSON.stringify(input)}`
     });
-    return validateLeadAnalysis(value);
+    return validateLeadScore(validateLeadAnalysis(value));
   }
 
   async function generateContentIdeas(icp, previousIdeas) {

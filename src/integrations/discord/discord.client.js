@@ -101,15 +101,8 @@ export function createDiscordClient(env) {
     for (const chunk of splitMessage(content)) await channel.send(chunk);
   }
 
-  async function sendLeadReport(leads) {
-    await sendMessage(
-      env.discordLeadsChannelId,
-      `**Relatório outbound — ${new Date().toLocaleDateString('pt-BR')}**\n${leads.length} lead(s) novo(s) selecionado(s).`
-    );
-
-    for (const lead of leads) {
-      await sendMessage(env.discordLeadsChannelId, formatLead(lead));
-    }
+  async function sendLeadReport(content) {
+    await sendMessage(env.discordLeadsChannelId, content);
   }
 
   async function sendContentIdeas(ideas) {
@@ -144,27 +137,11 @@ function createDisabledDiscordClient() {
     connect: skip,
     destroy: () => undefined,
     sendMessage: skip,
-    sendLeadReport: async (leads) => logger.info('Discord desabilitado; relatório não enviado', { leads: leads.length }),
+    sendLeadReport: async () => logger.info('Discord desabilitado; relatório não enviado'),
     sendContentIdeas: async (ideas) => logger.info('Discord desabilitado; ideias não enviadas', { ideas: ideas.length }),
     sendLog: skip,
     setMessageHandler: () => undefined
   };
-}
-
-function formatLead(lead) {
-  return [
-    `**#${lead.id} — ${lead.companyName}** | Score **${lead.score}/100**`,
-    `Local: ${valueOrNotFound(lead.city)}/${valueOrNotFound(lead.state)} | Segmento: ${valueOrNotFound(lead.segment)}`,
-    `CNPJ: ${valueOrNotFound(lead.cnpj)} | Site: ${valueOrNotFound(lead.website)}`,
-    `Telefone: ${valueOrNotFound(lead.phone)} | WhatsApp: ${valueOrNotFound(lead.whatsapp)}`,
-    `Porte: ${valueOrNotFound(lead.companySize)}`,
-    `Descrição: ${valueOrNotFound(lead.description)}`,
-    `Dores possíveis: ${lead.possiblePains.join('; ') || 'não identificadas'}`,
-    `Automação: ${lead.automationOpportunities.join('; ') || 'não identificada'}`,
-    `Software: ${lead.softwareOpportunities.join('; ') || 'não identificada'}`,
-    `Justificativa: ${lead.scoreReason}`,
-    `Abordagem: ${lead.approachSuggestion}`
-  ].join('\n');
 }
 
 function formatIdea(idea) {

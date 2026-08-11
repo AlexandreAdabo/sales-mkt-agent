@@ -98,8 +98,10 @@ function mockLeadAnalysis(candidate, icp) {
   const segmentMatches = icp.segments.includes(candidate.segment);
   const sizeMatches = candidate.employeeCount >= icp.companySize.minEmployees
     && candidate.employeeCount <= icp.companySize.maxEmployees;
-  const score = Math.min(100, 45 + (regionMatches ? 15 : 0) + (segmentMatches ? 20 : 0)
-    + (sizeMatches ? 15 : 0) + Math.min(candidate.signals.length * 2, 5));
+  const positiveMatches = candidate.signals.filter((signal) => icp.positiveSignals.includes(signal)).length;
+  const negativeMatches = (candidate.negativeSignals ?? []).filter((signal) => icp.negativeSignals.includes(signal)).length;
+  const score = Math.max(0, Math.min(100, 30 + (regionMatches ? 15 : 0) + (segmentMatches ? 20 : 0)
+    + (sizeMatches ? 20 : 0) + Math.min(positiveMatches * 5, 15) - (negativeMatches * 25)));
 
   return {
     companyName: candidate.companyName,
@@ -116,7 +118,7 @@ function mockLeadAnalysis(candidate, icp) {
     automationOpportunities: ['Automatizar tarefas repetitivas após diagnóstico do processo'],
     softwareOpportunities: ['Integrar sistemas internos após validação técnica'],
     score,
-    scoreReason: 'Score mock baseado somente em região, segmento, faixa de colaboradores e sinais do conjunto de teste.',
+    scoreReason: `Score mock baseado em região, segmento, porte, ${positiveMatches} sinal(is) positivo(s) e ${negativeMatches} negativo(s).`,
     approachSuggestion: 'Validar o cenário operacional em uma conversa breve antes de propor qualquer solução.'
   };
 }

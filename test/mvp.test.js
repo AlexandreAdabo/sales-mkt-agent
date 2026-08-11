@@ -42,14 +42,17 @@ test('jobs mock persistem resultados e não reapresentam leads', async () => {
     const leads = await container.dailyLeadsJob.run();
     const ideas = await container.contentIdeasJob.run();
     const moreIdeas = await container.contentIdeasJob.run();
+    const secondBatch = await container.dailyLeadsJob.run();
     const remainingLeads = await container.dailyLeadsJob.run();
     const repeatedLeads = await container.dailyLeadsJob.run();
     assert.equal(leads.length, 10);
     assert.equal(ideas.length, 3);
     assert.equal(moreIdeas.length, 3);
     assert.notDeepEqual(moreIdeas.map((idea) => idea.title), ideas.map((idea) => idea.title));
-    assert.equal(remainingLeads.length, 4);
+    assert.equal(secondBatch.length, 10);
+    assert.equal(remainingLeads.length, 2);
     assert.equal(repeatedLeads.length, 0);
+    assert.ok([...leads, ...secondBatch, ...remainingLeads].every((lead) => lead.score >= 70));
   } finally {
     container.close();
     rmSync(directory, { recursive: true, force: true });

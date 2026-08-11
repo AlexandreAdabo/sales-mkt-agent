@@ -1,14 +1,14 @@
 import { loadIcp } from '../config/icp.js';
 import { logger } from '../utils/logger.js';
 
-export function createOutboundAgent({ leadService, discordClient }) {
+export function createOutboundAgent({ leadService, leadReportService, discordClient }) {
   const findCandidates = (icp) => leadService.findCandidates(icp);
   const filterDuplicates = (candidates) => leadService.filterDuplicates(candidates);
   const researchCompany = (candidate) => leadService.researchCompany(candidate);
   const scoreLead = (company, icp) => leadService.scoreLead(company, icp);
-  const selectTopLeads = (leads) => leadService.selectTopLeads(leads, 10);
+  const selectTopLeads = (leads, limit) => leadService.selectTopLeads(leads, limit);
   const saveLeads = (leads) => leadService.saveLeads(leads);
-  const sendToDiscord = (leads) => discordClient.sendLeadReport(leads);
+  const sendToDiscord = (leads) => discordClient.sendLeadReport(leadReportService.format(leads));
 
   async function run() {
     const icp = await loadIcp();
@@ -19,14 +19,21 @@ export function createOutboundAgent({ leadService, discordClient }) {
     const analyzed = [];
 
     for (const candidate of newCandidates) {
-      const researched = await researchCompany(candidate);
-      analyzed.push(await scoreLead(researched, icp));
+      try {
+        const researched = await researchCompany(candidate);
+        analyzed.push(await scoreLead(researched, icp));
+      } catch (error) {
+        logger.error(`Falha ao analisar candidato ${candidate.companyName}`, error);
+      }
     }
 
-    const selected = selectTopLeads(analyzed);
+    const selected = selectTopLeads(
+      analyzed.filter((lead) => lead.score >= icp.minimumScore),
+      icp.dailyLeadLimit
+    );
     const saved = saveLeads(selected);
     logger.info(`${saved.length} leads selecionados e persistidos`);
-    await sendToDiscord(saved);
+    if (saved.length > 0) await sendToDiscord(saved);
     logger.info('Relatório de leads processado');
     return saved;
   }

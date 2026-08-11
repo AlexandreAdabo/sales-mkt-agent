@@ -15,6 +15,7 @@ import { createAIService } from './services/ai.service.js';
 import { createContentService } from './services/content.service.js';
 import { createConversationService } from './services/conversation.service.js';
 import { createLeadService } from './services/lead.service.js';
+import { createLeadReportService } from './services/lead-report.service.js';
 import { createSearchService } from './services/search.service.js';
 
 export function createContainer(env) {
@@ -30,8 +31,9 @@ export function createContainer(env) {
   const searchService = createSearchService(searchClient);
   const aiService = createAIService(aiClient);
   const leadService = createLeadService({ leadRepository, searchService, aiService });
+  const leadReportService = createLeadReportService({ timezone: env.timezone });
   const contentService = createContentService({ contentRepository, aiService });
-  const outboundAgent = createOutboundAgent({ leadService, discordClient });
+  const outboundAgent = createOutboundAgent({ leadService, leadReportService, discordClient });
   const contentAgent = createContentAgent({ contentService, discordClient });
   const conversationService = createConversationService({
     aiClient,
