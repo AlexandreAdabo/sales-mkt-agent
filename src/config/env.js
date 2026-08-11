@@ -16,6 +16,11 @@ export function loadEnv({ requireDiscord = true, requireAI = true } = {}) {
     aiProvider: process.env.AI_PROVIDER ?? 'mock',
     openaiApiKey: process.env.OPENAI_API_KEY || null,
     openaiModel: process.env.OPENAI_MODEL ?? 'gpt-5-mini',
+    openaiPricing: Object.freeze({
+      input: Number(process.env.OPENAI_INPUT_USD_PER_1M_TOKENS ?? 0.25),
+      cachedInput: Number(process.env.OPENAI_CACHED_INPUT_USD_PER_1M_TOKENS ?? 0.025),
+      output: Number(process.env.OPENAI_OUTPUT_USD_PER_1M_TOKENS ?? 2)
+    }),
     searchProvider: process.env.SEARCH_PROVIDER ?? 'mock',
     tavilyApiKey: process.env.TAVILY_API_KEY || null,
     dryRun: booleanValue(process.env.DRY_RUN, false),
@@ -58,6 +63,12 @@ function validateEnv(env, { requireDiscord, requireAI }) {
     if (!env.openaiModel) errors.push('OPENAI_MODEL é obrigatória quando AI_PROVIDER=openai');
     if (env.openaiApiKey && /[<>]/.test(env.openaiApiKey)) {
       errors.push('OPENAI_API_KEY contém um delimitador < ou >; informe somente o valor da chave');
+    }
+
+    for (const [name, value] of Object.entries(env.openaiPricing)) {
+      if (!Number.isFinite(value) || value < 0) {
+        errors.push(`Preço OpenAI inválido para ${name}; informe um número maior ou igual a zero`);
+      }
     }
   }
 

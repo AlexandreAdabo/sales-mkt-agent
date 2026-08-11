@@ -92,6 +92,9 @@ DATABASE_PATH=./data/sales-mkt-agent.sqlite
 AI_PROVIDER=mock
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
+OPENAI_INPUT_USD_PER_1M_TOKENS=0.25
+OPENAI_CACHED_INPUT_USD_PER_1M_TOKENS=0.025
+OPENAI_OUTPUT_USD_PER_1M_TOKENS=2
 
 SEARCH_PROVIDER=mock
 TAVILY_API_KEY=
@@ -107,6 +110,8 @@ DISCORD_LOGS_CHANNEL_ID=
 ```
 
 Com `AI_PROVIDER=mock`, a chave da OpenAI não é obrigatória. Para usar a API real, troque para `AI_PROVIDER=openai`, informe `OPENAI_API_KEY` e escolha `OPENAI_MODEL`. A integração usa saída estruturada com JSON Schema e uma segunda validação local.
+
+Cada chamada real registra `[OPENAI_USAGE]` com os tokens de entrada, cache, saída, raciocínio, total e o custo estimado em USD. As tarifas acima são valores por 1 milhão de tokens e correspondem ao `gpt-5-mini`; revise-as ao trocar de modelo ou quando a OpenAI alterar os preços.
 
 Informe tokens e chaves sem aspas ou delimitadores como `<` e `>`. O processo rejeita configurações com esses caracteres antes de acessar a API.
 

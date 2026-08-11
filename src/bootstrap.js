@@ -33,7 +33,7 @@ export function createContainer(env) {
     ? createTavilySearchClient({ apiKey: env.tavilyApiKey })
     : createMockSearchClient();
   const aiClient = env.aiProvider === 'openai'
-    ? createOpenAIClient({ apiKey: env.openaiApiKey, model: env.openaiModel })
+    ? createOpenAIClient({ apiKey: env.openaiApiKey, model: env.openaiModel, pricing: env.openaiPricing })
     : createMockAIClient();
   const discordClient = createDiscordClient(env);
   const searchService = createSearchService(searchClient);
