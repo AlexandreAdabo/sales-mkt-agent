@@ -21,7 +21,7 @@ async function start() {
 
   const app = createApp({ leadRepository: container.leadRepository });
   await new Promise((resolve, reject) => {
-    server = app.listen(env.port, resolve);
+    server = app.listen(env.port, '0.0.0.0', resolve);
     server.once('error', reject);
   });
   logger.info(`HTTP online em http://localhost:${env.port}`);
