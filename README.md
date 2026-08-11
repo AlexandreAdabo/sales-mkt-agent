@@ -85,6 +85,7 @@ Edite `.env`:
 ```dotenv
 NODE_ENV=development
 PORT=3000
+HOST=127.0.0.1
 APP_TIMEZONE=America/Sao_Paulo
 DATABASE_PATH=./data/sales-mkt-agent.sqlite
 
@@ -177,7 +178,7 @@ npm run dev
 
 O outbound possui `DRY_RUN=true` para buscar, enriquecer e pontuar sem persistir leads nem enviar ao Discord. Execucoes sao protegidas por lock ao lado do banco e registradas em `job_runs`. Com Tavily, a homepage oficial de cada candidato e enviada ao Extract antes da analise estruturada.
 
-Use apenas um agendador. O padrao `INTERNAL_CRON_ENABLED=true` registra o node-cron das 05:00. Ao configurar cron do Linux, defina `INTERNAL_CRON_ENABLED=false` no processo mantido pelo PM2 para impedir execucao duplicada.
+Use apenas um agendador para cada job. `INTERNAL_LEADS_CRON_ENABLED=true` registra o outbound das 05:00; ao usar cron do Linux para leads, defina-o como `false`. `INTERNAL_CONTENT_CRON_ENABLED=true` mantém a geração de conteúdo no processo PM2.
 
 Agendamentos internos, ambos com `America/Sao_Paulo` por padrão:
 

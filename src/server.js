@@ -12,23 +12,26 @@ async function start() {
   container = createContainer(env);
   await container.discordClient.connect();
 
-  if (env.internalCronEnabled) scheduledTasks = [
-    container.dailyLeadsJob.schedule(env.timezone),
-    container.contentIdeasJob.schedule(env.timezone)
-  ];
-  if (env.internalCronEnabled) {
+  if (env.internalLeadsCronEnabled) {
+    scheduledTasks.push(container.dailyLeadsJob.schedule(env.timezone));
     logger.info(`Cron de leads registrado: diariamente às 05:00 (${env.timezone})`);
-    logger.info(`Cron de conteúdo registrado: seg/qua/sex às 05:15 (${env.timezone})`);
+  } else {
+    logger.info('Cron interno de leads desabilitado; agendamento deve ser executado externamente');
   }
 
-  if (!env.internalCronEnabled) logger.info('Cron interno desabilitado; agendamentos devem ser executados externamente');
+  if (env.internalContentCronEnabled) {
+    scheduledTasks.push(container.contentIdeasJob.schedule(env.timezone));
+    logger.info(`Cron de conteúdo registrado: seg/qua/sex às 05:15 (${env.timezone})`);
+  } else {
+    logger.info('Cron interno de conteúdo desabilitado');
+  }
 
   const app = createApp({ leadRepository: container.leadRepository });
   await new Promise((resolve, reject) => {
-    server = app.listen(env.port, '0.0.0.0', resolve);
+    server = app.listen(env.port, env.host, resolve);
     server.once('error', reject);
   });
-  logger.info(`HTTP online em http://localhost:${env.port}`);
+  logger.info(`HTTP online em http://${env.host}:${env.port}`);
 }
 
 async function shutdown(signal) {

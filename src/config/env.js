@@ -10,6 +10,7 @@ export function loadEnv({ requireDiscord = true, requireAI = true } = {}) {
   const env = {
     nodeEnv: process.env.NODE_ENV ?? 'development',
     port: Number(process.env.PORT ?? 3000),
+    host: process.env.HOST ?? '127.0.0.1',
     timezone: process.env.APP_TIMEZONE ?? 'America/Sao_Paulo',
     databasePath: path.resolve(process.env.DATABASE_PATH ?? './data/sales-mkt-agent.sqlite'),
     aiProvider: process.env.AI_PROVIDER ?? 'mock',
@@ -18,7 +19,11 @@ export function loadEnv({ requireDiscord = true, requireAI = true } = {}) {
     searchProvider: process.env.SEARCH_PROVIDER ?? 'mock',
     tavilyApiKey: process.env.TAVILY_API_KEY || null,
     dryRun: booleanValue(process.env.DRY_RUN, false),
-    internalCronEnabled: booleanValue(process.env.INTERNAL_CRON_ENABLED, true),
+    internalLeadsCronEnabled: booleanValue(
+      process.env.INTERNAL_LEADS_CRON_ENABLED,
+      booleanValue(process.env.INTERNAL_CRON_ENABLED, true)
+    ),
+    internalContentCronEnabled: booleanValue(process.env.INTERNAL_CONTENT_CRON_ENABLED, true),
     discordEnabled: booleanValue(process.env.DISCORD_ENABLED, true),
     discordToken: process.env.DISCORD_TOKEN || null,
     discordGuildId: process.env.DISCORD_GUILD_ID || null,
@@ -38,6 +43,10 @@ function validateEnv(env, { requireDiscord, requireAI }) {
 
   if (!Number.isInteger(env.port) || env.port < 1 || env.port > 65535) {
     errors.push('PORT deve ser um número inteiro entre 1 e 65535');
+  }
+
+  if (!['127.0.0.1', '0.0.0.0'].includes(env.host)) {
+    errors.push('HOST deve ser "127.0.0.1" ou "0.0.0.0"');
   }
 
   if (!['mock', 'openai'].includes(env.aiProvider)) {
