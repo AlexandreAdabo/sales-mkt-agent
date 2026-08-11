@@ -16,8 +16,8 @@ async function start() {
     container.dailyLeadsJob.schedule(env.timezone),
     container.contentIdeasJob.schedule(env.timezone)
   ];
-  logger.info(`Cron de leads registrado: diariamente às 06:00 (${env.timezone})`);
-  logger.info(`Cron de conteúdo registrado: seg/qua/sex às 07:00 (${env.timezone})`);
+  logger.info(`Cron de leads registrado: diariamente às 05:00 (${env.timezone})`);
+  logger.info(`Cron de conteúdo registrado: seg/qua/sex às 05:15 (${env.timezone})`);
 
   const app = createApp();
   await new Promise((resolve, reject) => {

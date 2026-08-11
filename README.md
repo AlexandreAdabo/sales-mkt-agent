@@ -121,7 +121,7 @@ O ICP é lido em toda execução a partir de `config/icp.json`; alterações nã
 5. Ative o modo desenvolvedor do Discord, copie o ID do servidor e os IDs dos cinco canais usados no `.env`.
 6. Preencha o token e os IDs. O token nunca deve ser versionado.
 
-O canal `#dashboard` está reservado para uma etapa futura. No `#agente`, o MVP já responde a consultas como `me mostre o lead 15` e `me mostre a ideia 8`.
+O canal `#dashboard` está reservado para uma etapa futura. No `#agente`, o assistente usa a OpenAI para consultar leads e ideias de conteúdo em linguagem natural. A conversa é separada por usuário, mantém as últimas 20 mensagens no SQLite e pode ser reiniciada com `limpar conversa`. O chat é somente leitura: ele não altera status nem executa jobs.
 
 Valide as credenciais sem publicar mensagens:
 
@@ -166,8 +166,8 @@ npm run dev
 
 Agendamentos internos, ambos com `America/Sao_Paulo` por padrão:
 
-- Outbound: todos os dias às 06:00 (`0 6 * * *`).
-- Conteúdo: segunda, quarta e sexta às 07:00 (`0 7 * * 1,3,5`).
+- Outbound: todos os dias às 05:00 (`0 5 * * *`).
+- Conteúdo: segunda, quarta e sexta às 05:15 (`15 5 * * 1,3,5`).
 
 Execução manual:
 
@@ -184,7 +184,7 @@ O `OutboundAgent` carrega o ICP, busca candidatos, elimina registros conhecidos,
 
 O `ContentAgent` carrega o ICP e até mil ideias anteriores, gera três propostas estruturadas, elimina repetições, persiste e envia ao Discord. A estrutura permite acrescentar dores agregadas dos leads ao contexto futuramente.
 
-O `RouterAgent` concentra a interação no `#agente`. Ele já consulta registros por ID e é o ponto de extensão para atualizar status, aprofundar pesquisas e desenvolver abordagens ou conteúdos.
+O `RouterAgent` concentra a interação no `#agente`. Consultas diretas por ID continuam disponíveis, e perguntas livres usam a OpenAI com ferramentas locais somente leitura para pesquisar leads e ideias. O histórico fica no SQLite e não é armazenado pela OpenAI.
 
 ## Trocar o SearchClient mock
 
@@ -250,6 +250,6 @@ O job também passa explicitamente o timezone ao `node-cron`, e o PM2 define `TZ
 1. Implementar um SearchClient real com fontes rastreáveis.
 2. Ativar `AI_PROVIDER=openai` e avaliar o modelo econômico escolhido com dados representativos.
 3. Criar endpoints autenticados para leads, conteúdos e execução manual de jobs.
-4. Adicionar atualização de status e comandos conversacionais no `RouterAgent`.
+4. Planejar atualização de status com confirmação explícita no `RouterAgent`.
 5. Acrescentar retentativas controladas e limites de concorrência para APIs externas.
 6. Planejar backup periódico do arquivo SQLite antes de uso contínuo em produção.

@@ -9,9 +9,11 @@ import { createMockSearchClient } from './integrations/search/mock-search.client
 import { createContentIdeasJob } from './jobs/content-ideas.job.js';
 import { createDailyLeadsJob } from './jobs/daily-leads.job.js';
 import { createContentRepository } from './repositories/content.repository.js';
+import { createConversationRepository } from './repositories/conversation.repository.js';
 import { createLeadRepository } from './repositories/lead.repository.js';
 import { createAIService } from './services/ai.service.js';
 import { createContentService } from './services/content.service.js';
+import { createConversationService } from './services/conversation.service.js';
 import { createLeadService } from './services/lead.service.js';
 import { createSearchService } from './services/search.service.js';
 
@@ -19,6 +21,7 @@ export function createContainer(env) {
   const database = createDatabase(env.databasePath);
   const leadRepository = createLeadRepository(database);
   const contentRepository = createContentRepository(database);
+  const conversationRepository = createConversationRepository(database);
   const searchClient = createMockSearchClient();
   const aiClient = env.aiProvider === 'openai'
     ? createOpenAIClient({ apiKey: env.openaiApiKey, model: env.openaiModel })
@@ -30,7 +33,13 @@ export function createContainer(env) {
   const contentService = createContentService({ contentRepository, aiService });
   const outboundAgent = createOutboundAgent({ leadService, discordClient });
   const contentAgent = createContentAgent({ contentService, discordClient });
-  const routerAgent = createRouterAgent({ leadRepository, contentRepository });
+  const conversationService = createConversationService({
+    aiClient,
+    conversationRepository,
+    leadRepository,
+    contentRepository
+  });
+  const routerAgent = createRouterAgent({ conversationService });
   const dailyLeadsJob = createDailyLeadsJob({ outboundAgent, discordClient });
   const contentIdeasJob = createContentIdeasJob({ contentAgent, discordClient });
 

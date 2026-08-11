@@ -1,6 +1,8 @@
 import cron from 'node-cron';
 import { logger } from '../utils/logger.js';
 
+export const DAILY_LEADS_CRON = '0 5 * * *';
+
 export function createDailyLeadsJob({ outboundAgent, discordClient }) {
   let running = false;
 
@@ -24,7 +26,7 @@ export function createDailyLeadsJob({ outboundAgent, discordClient }) {
   }
 
   function schedule(timezone) {
-    return cron.schedule('0 6 * * *', () => run().catch(() => undefined), { timezone });
+    return cron.schedule(DAILY_LEADS_CRON, () => run().catch(() => undefined), { timezone });
   }
 
   return { run, schedule };

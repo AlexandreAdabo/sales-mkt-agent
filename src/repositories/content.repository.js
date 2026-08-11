@@ -66,5 +66,23 @@ export function createContentRepository(database) {
     return database.prepare('SELECT * FROM content_ideas WHERE id = ?').get(id) ?? null;
   }
 
-  return { listRecent, isDuplicate, saveMany, findById };
+  function search({ query = null, status = null, platform = null, limit = 10 } = {}) {
+    const normalizedQuery = query?.trim() || null;
+    return database.prepare(`
+      SELECT * FROM content_ideas
+      WHERE (? IS NULL OR title LIKE '%' || ? || '%' COLLATE NOCASE
+        OR topic LIKE '%' || ? || '%' COLLATE NOCASE)
+        AND (? IS NULL OR status = ?)
+        AND (? IS NULL OR platform LIKE ? COLLATE NOCASE)
+      ORDER BY generated_at DESC
+      LIMIT ?
+    `).all(
+      normalizedQuery, normalizedQuery, normalizedQuery,
+      status, status,
+      platform, platform,
+      Math.min(Math.max(limit, 1), 20)
+    );
+  }
+
+  return { listRecent, isDuplicate, saveMany, findById, search };
 }

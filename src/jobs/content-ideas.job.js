@@ -1,6 +1,8 @@
 import cron from 'node-cron';
 import { logger } from '../utils/logger.js';
 
+export const CONTENT_IDEAS_CRON = '15 5 * * 1,3,5';
+
 export function createContentIdeasJob({ contentAgent, discordClient }) {
   let running = false;
 
@@ -24,7 +26,7 @@ export function createContentIdeasJob({ contentAgent, discordClient }) {
   }
 
   function schedule(timezone) {
-    return cron.schedule('0 7 * * 1,3,5', () => run().catch(() => undefined), { timezone });
+    return cron.schedule(CONTENT_IDEAS_CRON, () => run().catch(() => undefined), { timezone });
   }
 
   return { run, schedule };

@@ -43,11 +43,17 @@ export function createDiscordClient(env) {
     if (message.author.bot || message.channelId !== env.discordAgentChannelId || !messageHandler) return;
 
     try {
-      const response = await messageHandler(message.content);
+      const response = await messageHandler({
+        content: message.content,
+        userId: message.author.id,
+        channelId: message.channelId,
+        guildId: message.guildId
+      });
       await sendMessage(env.discordAgentChannelId, response);
     } catch (error) {
       logger.error('Erro ao processar mensagem do canal #agente', error);
-      await sendLog(`Erro no canal #agente: ${error.message}`).catch((logError) => {
+      await sendMessage(env.discordAgentChannelId, 'Não consegui processar sua mensagem agora. Tente novamente em instantes.').catch(() => undefined);
+      await sendLog('Falha ao processar uma mensagem no canal #agente. Consulte os logs da aplicação.').catch((logError) => {
         logger.error('Não foi possível enviar o erro ao canal #logs', logError);
       });
     }

@@ -97,5 +97,30 @@ export function createLeadRepository(database) {
     return database.prepare('SELECT * FROM leads WHERE id = ?').get(id) ?? null;
   }
 
-  return { listIdentities, isDuplicate, saveMany, findById };
+  function search({ query = null, status = null, minScore = null, limit = 10 } = {}) {
+    const normalizedQuery = query?.trim() || null;
+    return database.prepare(`
+      SELECT * FROM leads
+      WHERE (? IS NULL OR company_name LIKE '%' || ? || '%' COLLATE NOCASE)
+        AND (? IS NULL OR status = ?)
+        AND (? IS NULL OR score >= ?)
+      ORDER BY score DESC, discovered_at DESC
+      LIMIT ?
+    `).all(
+      normalizedQuery, normalizedQuery,
+      status, status,
+      minScore, minScore,
+      Math.min(Math.max(limit, 1), 20)
+    );
+  }
+
+  function listRecent(limit = 10) {
+    return database.prepare(`
+      SELECT * FROM leads
+      ORDER BY discovered_at DESC
+      LIMIT ?
+    `).all(Math.min(Math.max(limit, 1), 20));
+  }
+
+  return { listIdentities, isDuplicate, saveMany, findById, search, listRecent };
 }

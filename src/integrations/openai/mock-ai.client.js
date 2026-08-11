@@ -86,7 +86,11 @@ export function createMockAIClient() {
     throw new Error(`Schema mock não suportado: ${schemaName}`);
   }
 
-  return { generateStructured };
+  async function converse() {
+    return { answer: 'O chat conversacional requer AI_PROVIDER=openai.' };
+  }
+
+  return { generateStructured, converse };
 }
 
 function mockLeadAnalysis(candidate, icp) {

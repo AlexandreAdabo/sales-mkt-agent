@@ -52,6 +52,19 @@ const migrations = [
     CREATE INDEX IF NOT EXISTS idx_content_status ON content_ideas(status);
     CREATE INDEX IF NOT EXISTS idx_content_generated_at ON content_ideas(generated_at DESC);
     CREATE INDEX IF NOT EXISTS idx_content_title ON content_ideas(title);
+
+    CREATE TABLE IF NOT EXISTS conversation_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      guild_id TEXT NOT NULL,
+      channel_id TEXT NOT NULL,
+      user_id TEXT NOT NULL,
+      role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+      content TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_conversation_context
+      ON conversation_messages(guild_id, channel_id, user_id, id DESC);
   `
 ];
 
