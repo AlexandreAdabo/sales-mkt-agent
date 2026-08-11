@@ -18,8 +18,8 @@ export function createLeadRepository(database) {
     INSERT INTO leads (
       company_name, cnpj, website, phone, whatsapp, city, state, segment,
       description, company_size, score, score_reason, opportunity,
-      approach_suggestion, status, discovered_at, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NEW', ?, ?, ?)
+      approach_suggestion, source, source_url, research_data, status, discovered_at, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'NEW', ?, ?, ?)
   `);
 
   function listIdentities() {
@@ -70,6 +70,9 @@ export function createLeadRepository(database) {
             software: lead.softwareOpportunities
           }),
           lead.approachSuggestion,
+          lead.source ?? null,
+          lead.sourceUrl ?? lead.website ?? null,
+          lead.researchData ? JSON.stringify(lead.researchData) : null,
           lead.discoveredAt ?? now,
           now,
           now

@@ -93,6 +93,7 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5-mini
 
 SEARCH_PROVIDER=mock
+TAVILY_API_KEY=
 
 DISCORD_ENABLED=true
 DISCORD_TOKEN=
@@ -173,6 +174,10 @@ npm run dev
 ```
 
 ## Jobs
+
+O outbound possui `DRY_RUN=true` para buscar, enriquecer e pontuar sem persistir leads nem enviar ao Discord. Execucoes sao protegidas por lock ao lado do banco e registradas em `job_runs`. Com Tavily, a homepage oficial de cada candidato e enviada ao Extract antes da analise estruturada.
+
+Use apenas um agendador. O padrao `INTERNAL_CRON_ENABLED=true` registra o node-cron das 05:00. Ao configurar cron do Linux, defina `INTERNAL_CRON_ENABLED=false` no processo mantido pelo PM2 para impedir execucao duplicada.
 
 Agendamentos internos, ambos com `America/Sao_Paulo` por padrão:
 

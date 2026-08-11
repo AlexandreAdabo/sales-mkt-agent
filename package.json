@@ -16,6 +16,7 @@
     "db:init": "node src/scripts/init-db.js",
     "test:openai": "node scripts/test-openai.js",
     "test:discord": "node scripts/test-discord.js",
+    "test:tavily": "node src/scripts/test-tavily.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {

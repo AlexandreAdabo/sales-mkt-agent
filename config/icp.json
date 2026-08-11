@@ -11,6 +11,12 @@
   },
   "minimumScore": 70,
   "dailyLeadLimit": 10,
+  "search": {
+    "queriesPerRun": 1,
+    "resultsPerQuery": 5,
+    "maxCandidatesForAI": 3,
+    "maxCandidatesForEnrichment": 3
+  },
   "segments": [
     "indústria",
     "logística",

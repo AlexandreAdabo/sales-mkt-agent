@@ -12,12 +12,16 @@ async function start() {
   container = createContainer(env);
   await container.discordClient.connect();
 
-  scheduledTasks = [
+  if (env.internalCronEnabled) scheduledTasks = [
     container.dailyLeadsJob.schedule(env.timezone),
     container.contentIdeasJob.schedule(env.timezone)
   ];
-  logger.info(`Cron de leads registrado: diariamente às 05:00 (${env.timezone})`);
-  logger.info(`Cron de conteúdo registrado: seg/qua/sex às 05:15 (${env.timezone})`);
+  if (env.internalCronEnabled) {
+    logger.info(`Cron de leads registrado: diariamente às 05:00 (${env.timezone})`);
+    logger.info(`Cron de conteúdo registrado: seg/qua/sex às 05:15 (${env.timezone})`);
+  }
+
+  if (!env.internalCronEnabled) logger.info('Cron interno desabilitado; agendamentos devem ser executados externamente');
 
   const app = createApp({ leadRepository: container.leadRepository });
   await new Promise((resolve, reject) => {

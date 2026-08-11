@@ -35,7 +35,13 @@ export function createLeadService({ leadRepository, searchService, aiService }) 
   }
 
   async function scoreLead(researchedCompany, icp) {
-    return aiService.analyzeLead(researchedCompany, icp);
+    const analysis = await aiService.analyzeLead(researchedCompany, icp);
+    return {
+      ...analysis,
+      source: researchedCompany.source ?? null,
+      sourceUrl: researchedCompany.sourceUrl ?? researchedCompany.website ?? null,
+      researchData: researchedCompany.researchData ?? null
+    };
   }
 
   function selectTopLeads(leads, limit = 10) {

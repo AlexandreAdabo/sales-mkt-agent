@@ -15,5 +15,11 @@ export async function loadIcp() {
     throw new Error('config/icp.json deve conter dailyLeadLimit como inteiro positivo');
   }
 
+  for (const field of ['queriesPerRun', 'resultsPerQuery', 'maxCandidatesForAI', 'maxCandidatesForEnrichment']) {
+    if (!Number.isInteger(icp.search?.[field]) || icp.search[field] < 1) {
+      throw new Error(`config/icp.json deve conter search.${field} como inteiro positivo`);
+    }
+  }
+
   return icp;
 }

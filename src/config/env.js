@@ -16,6 +16,9 @@ export function loadEnv({ requireDiscord = true, requireAI = true } = {}) {
     openaiApiKey: process.env.OPENAI_API_KEY || null,
     openaiModel: process.env.OPENAI_MODEL ?? 'gpt-5-mini',
     searchProvider: process.env.SEARCH_PROVIDER ?? 'mock',
+    tavilyApiKey: process.env.TAVILY_API_KEY || null,
+    dryRun: booleanValue(process.env.DRY_RUN, false),
+    internalCronEnabled: booleanValue(process.env.INTERNAL_CRON_ENABLED, true),
     discordEnabled: booleanValue(process.env.DISCORD_ENABLED, true),
     discordToken: process.env.DISCORD_TOKEN || null,
     discordGuildId: process.env.DISCORD_GUILD_ID || null,
@@ -49,8 +52,13 @@ function validateEnv(env, { requireDiscord, requireAI }) {
     }
   }
 
-  if (env.searchProvider !== 'mock') {
+  if (!['mock', 'tavily'].includes(env.searchProvider)) {
     errors.push(`SEARCH_PROVIDER não suportado: ${env.searchProvider}`);
+  }
+
+  if (env.searchProvider === 'tavily') {
+    if (!env.tavilyApiKey) errors.push('TAVILY_API_KEY e obrigatoria quando SEARCH_PROVIDER=tavily');
+    if (env.tavilyApiKey && /[<>]/.test(env.tavilyApiKey)) errors.push('TAVILY_API_KEY deve conter somente o valor da chave');
   }
 
   if (requireDiscord && env.discordEnabled) {

@@ -82,6 +82,7 @@ const contentTemplates = [
 export function createMockAIClient() {
   async function generateStructured({ schemaName, input }) {
     if (schemaName === 'lead_analysis') return mockLeadAnalysis(input.candidate, input.icp);
+    if (schemaName === 'lead_enrichment') return mockLeadEnrichment(input.candidate);
     if (schemaName === 'content_ideas') return mockContentIdeas(input.previousIdeas);
     throw new Error(`Schema mock não suportado: ${schemaName}`);
   }
@@ -91,6 +92,21 @@ export function createMockAIClient() {
   }
 
   return { generateStructured, converse };
+}
+
+function mockLeadEnrichment(candidate) {
+  return {
+    companyName: candidate.companyName ?? null,
+    phone: candidate.phone ?? null,
+    whatsapp: candidate.whatsapp ?? null,
+    city: candidate.city ?? null,
+    state: candidate.state ?? null,
+    segment: candidate.segment ?? null,
+    description: candidate.description ?? null,
+    companySize: candidate.companySize ?? null,
+    cnpj: candidate.cnpj ?? null,
+    signals: candidate.signals ?? []
+  };
 }
 
 function mockLeadAnalysis(candidate, icp) {

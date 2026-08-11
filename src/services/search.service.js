@@ -4,7 +4,7 @@ export function createSearchService(searchClient) {
   const client = assertSearchClient(searchClient);
 
   async function findCandidates(icp) {
-    return client.searchCompanies({ regions: icp.regions, segments: icp.segments });
+    return client.searchCompanies({ regions: icp.regions, segments: icp.segments, search: icp.search });
   }
 
   async function researchCompany(candidate) {

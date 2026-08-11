@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { contentIdeasJsonSchema, validateContentIdeas } from '../schemas/content.schema.js';
 import { leadAnalysisJsonSchema, validateLeadAnalysis } from '../schemas/lead.schema.js';
+import { leadEnrichmentJsonSchema, validateLeadEnrichment } from '../schemas/lead-enrichment.schema.js';
 import { validateLeadScore } from '../validators/lead-score.validator.js';
 
 async function loadPrompt(fileName) {
@@ -9,6 +10,18 @@ async function loadPrompt(fileName) {
 }
 
 export function createAIService(aiClient) {
+  async function extractLeadData({ candidate, websiteContent }) {
+    const prompt = await loadPrompt('lead-enrichment.prompt.md');
+    const input = { candidate, websiteContent };
+    const value = await aiClient.generateStructured({
+      schemaName: 'lead_enrichment',
+      schema: leadEnrichmentJsonSchema,
+      input,
+      prompt: `${prompt}\n\nDADOS:\n${JSON.stringify(input)}`
+    });
+    return validateLeadEnrichment(value);
+  }
+
   async function analyzeLead(candidate, icp) {
     const [researchPrompt, scorePrompt] = await Promise.all([
       loadPrompt('lead-research.prompt.md'),
@@ -39,5 +52,5 @@ export function createAIService(aiClient) {
     return validateContentIdeas(value);
   }
 
-  return { analyzeLead, generateContentIdeas };
+  return { extractLeadData, analyzeLead, generateContentIdeas };
 }

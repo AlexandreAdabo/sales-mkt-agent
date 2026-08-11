@@ -16,6 +16,9 @@ const migrations = [
       score_reason TEXT NOT NULL,
       opportunity TEXT,
       approach_suggestion TEXT,
+      source TEXT,
+      source_url TEXT,
+      research_data TEXT,
       status TEXT NOT NULL DEFAULT 'NEW' CHECK (status IN ('NEW', 'CONTACTED', 'INTERESTED', 'DISCARDED', 'CLIENT')),
       discovered_at TEXT NOT NULL,
       contacted_at TEXT,
@@ -28,6 +31,18 @@ const migrations = [
     CREATE INDEX IF NOT EXISTS idx_leads_cnpj ON leads(cnpj);
     CREATE INDEX IF NOT EXISTS idx_leads_website ON leads(website);
     CREATE INDEX IF NOT EXISTS idx_leads_name_city ON leads(company_name, city);
+
+    CREATE TABLE IF NOT EXISTS job_runs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      job_name TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (status IN ('RUNNING', 'SUCCESS', 'FAILED')),
+      started_at TEXT NOT NULL,
+      finished_at TEXT,
+      candidates_found INTEGER,
+      candidates_enriched INTEGER,
+      leads_created INTEGER,
+      error TEXT
+    );
 
     CREATE TABLE IF NOT EXISTS content_ideas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,6 +90,10 @@ export function runMigrations(database) {
 
   try {
     for (const migration of migrations) database.exec(migration);
+    const leadColumns = new Set(database.prepare('PRAGMA table_info(leads)').all().map((column) => column.name));
+    if (!leadColumns.has('source')) database.exec('ALTER TABLE leads ADD COLUMN source TEXT');
+    if (!leadColumns.has('source_url')) database.exec('ALTER TABLE leads ADD COLUMN source_url TEXT');
+    if (!leadColumns.has('research_data')) database.exec('ALTER TABLE leads ADD COLUMN research_data TEXT');
     database.exec('COMMIT;');
   } catch (error) {
     database.exec('ROLLBACK;');

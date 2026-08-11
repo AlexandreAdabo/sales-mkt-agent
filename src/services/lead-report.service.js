@@ -3,6 +3,9 @@ export function createLeadReportService({ timezone = 'America/Sao_Paulo' } = {})
     const date = new Intl.DateTimeFormat('pt-BR', { timeZone: timezone }).format(new Date());
     const entries = leads.map((lead, index) => [
       `**${index + 1}. ${lead.companyName}**`,
+      `Telefone: ${lead.phone || '-'}`,
+      `WhatsApp: ${lead.whatsapp || '-'}`,
+      `CNPJ: ${lead.cnpj || '-'}`,
       `📍 ${lead.city || '-'} / ${lead.state || '-'}`,
       `🏢 ${lead.segment || '-'}`,
       `🌐 ${lead.website || 'não encontrado'}`,
@@ -16,6 +19,8 @@ export function createLeadReportService({ timezone = 'America/Sao_Paulo' } = {})
       '',
       '**Abordagem sugerida**',
       lead.approachSuggestion || '-',
+      '',
+      `Fontes: ${lead.researchData?.sources?.map((source) => source.url).join('; ') || lead.sourceUrl || '-'}`,
       '',
       '──────────────'
     ].join('\n'));
