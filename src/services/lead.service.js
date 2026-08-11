@@ -1,12 +1,8 @@
+import { normalizeDomain } from '../utils/domain.js';
+
 function identity(candidate) {
   const cnpj = candidate.cnpj?.replace(/\D/g, '') || '';
-  let domain = '';
-
-  try {
-    domain = new URL(candidate.website).hostname.replace(/^www\./i, '').toLowerCase();
-  } catch {
-    domain = candidate.website?.toLowerCase() || '';
-  }
+  const domain = normalizeDomain(candidate.website);
 
   const nameCity = `${candidate.companyName}|${candidate.city}`.toLocaleLowerCase('pt-BR');
   return { cnpj, domain, nameCity };

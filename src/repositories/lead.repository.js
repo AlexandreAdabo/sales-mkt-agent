@@ -1,3 +1,5 @@
+import { normalizeDomain } from '../utils/domain.js';
+
 function normalizeText(value) {
   return value?.trim().toLocaleLowerCase('pt-BR') || null;
 }
@@ -5,17 +7,6 @@ function normalizeText(value) {
 function normalizeCnpj(value) {
   const digits = value?.replace(/\D/g, '');
   return digits || null;
-}
-
-function getDomain(value) {
-  if (!value) return null;
-
-  try {
-    const url = new URL(value.match(/^https?:\/\//i) ? value : `https://${value}`);
-    return url.hostname.replace(/^www\./i, '').toLowerCase();
-  } catch {
-    return null;
-  }
 }
 
 export function createLeadRepository(database) {
@@ -34,7 +25,7 @@ export function createLeadRepository(database) {
   function listIdentities() {
     return listIdentityStatement.all().map((lead) => ({
       cnpj: normalizeCnpj(lead.cnpj),
-      domain: getDomain(lead.website),
+      domain: normalizeDomain(lead.website),
       name: normalizeText(lead.company_name),
       city: normalizeText(lead.city)
     }));
@@ -42,7 +33,7 @@ export function createLeadRepository(database) {
 
   function isDuplicate(candidate, identities = listIdentities()) {
     const cnpj = normalizeCnpj(candidate.cnpj);
-    const domain = getDomain(candidate.website);
+    const domain = normalizeDomain(candidate.website);
     const name = normalizeText(candidate.companyName);
     const city = normalizeText(candidate.city);
 
@@ -122,5 +113,12 @@ export function createLeadRepository(database) {
     `).all(Math.min(Math.max(limit, 1), 20));
   }
 
-  return { listIdentities, isDuplicate, saveMany, findById, search, listRecent };
+  function listAll() {
+    return database.prepare(`
+      SELECT * FROM leads
+      ORDER BY score DESC, discovered_at DESC
+    `).all();
+  }
+
+  return { listIdentities, isDuplicate, saveMany, findById, search, listRecent, listAll };
 }

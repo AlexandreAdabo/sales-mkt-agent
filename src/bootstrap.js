@@ -47,6 +47,7 @@ export function createContainer(env) {
 
   return {
     database,
+    leadRepository,
     discordClient,
     dailyLeadsJob,
     contentIdeasJob,

@@ -19,7 +19,7 @@ async function start() {
   logger.info(`Cron de leads registrado: diariamente às 05:00 (${env.timezone})`);
   logger.info(`Cron de conteúdo registrado: seg/qua/sex às 05:15 (${env.timezone})`);
 
-  const app = createApp();
+  const app = createApp({ leadRepository: container.leadRepository });
   await new Promise((resolve, reject) => {
     server = app.listen(env.port, resolve);
     server.once('error', reject);

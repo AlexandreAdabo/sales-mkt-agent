@@ -156,6 +156,15 @@ Resposta esperada:
 
 O timestamp varia a cada requisição.
 
+Endpoints de consulta de leads:
+
+```bash
+curl http://localhost:3000/leads
+curl http://localhost:3000/leads/1
+```
+
+`GET /leads` retorna todos os leads ordenados por score e data de descoberta. `GET /leads/:id` retorna um lead, responde `400` para ID inválido e `404` quando o registro não existe.
+
 Para desenvolvimento com reinício automático:
 
 ```bash
@@ -249,7 +258,7 @@ O job também passa explicitamente o timezone ao `node-cron`, e o PM2 define `TZ
 
 1. Implementar um SearchClient real com fontes rastreáveis.
 2. Ativar `AI_PROVIDER=openai` e avaliar o modelo econômico escolhido com dados representativos.
-3. Criar endpoints autenticados para leads, conteúdos e execução manual de jobs.
+3. Adicionar autenticação aos endpoints e criar consultas de conteúdos.
 4. Planejar atualização de status com confirmação explícita no `RouterAgent`.
 5. Acrescentar retentativas controladas e limites de concorrência para APIs externas.
 6. Planejar backup periódico do arquivo SQLite antes de uso contínuo em produção.
