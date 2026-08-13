@@ -20,7 +20,7 @@ test('dry-run registra a execucao sem persistir leads', async () => {
   try {
     const preview = await container.dailyLeadsJob.run();
     const run = container.database.prepare('SELECT * FROM job_runs ORDER BY id DESC LIMIT 1').get();
-    assert.equal(preview.length, 10);
+    assert.equal(preview.length, 5);
     assert.equal(container.leadRepository.listAll().length, 0);
     assert.equal(run.status, 'SUCCESS');
     assert.equal(run.leads_created, 0);

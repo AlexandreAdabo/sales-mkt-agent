@@ -9,20 +9,27 @@
     "minEmployees": 10,
     "maxEmployees": 300
   },
-  "minimumScore": 70,
-  "dailyLeadLimit": 10,
+  "minimumScore": 75,
+  "dailyLeadLimit": 5,
   "search": {
-    "queriesPerRun": 1,
-    "resultsPerQuery": 5,
-    "maxCandidatesForAI": 3,
-    "maxCandidatesForEnrichment": 3
+    "queriesPerRun": 12,
+    "resultsPerQuery": 8,
+    "maxCandidatesForAI": 30,
+    "maxCandidatesForEnrichment": 30
   },
   "segments": [
-    "indústria",
-    "logística",
-    "distribuidora",
-    "serviços B2B",
-    "varejo"
+    "clínica odontológica",
+    "escritório de contabilidade",
+    "escritório de advocacia"
+  ],
+  "segmentKeywords": [
+    "odontolog",
+    "dentári",
+    "contabil",
+    "contábil",
+    "advocacia",
+    "advocatícios",
+    "jurídico"
   ],
   "services": [
     "automação de processos",
@@ -39,6 +46,8 @@
     "uso intenso de planilhas",
     "sistemas legados",
     "múltiplos sistemas sem integração",
+    "alto volume de agendamentos ou atendimentos",
+    "alto volume de documentos e prazos",
     "operação administrativa relevante",
     "empresa em crescimento",
     "processos repetitivos"
@@ -47,6 +56,8 @@
     "empresa encerrada",
     "empresa sem presença digital mínima",
     "profissional autônomo",
+    "consultório individual",
+    "empresa fora dos segmentos do ICP",
     "microempresa muito pequena sem operação relevante"
   ]
 }

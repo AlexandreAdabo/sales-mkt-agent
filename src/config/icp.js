@@ -5,8 +5,8 @@ export async function loadIcp() {
   const content = await readFile(path.resolve('config', 'icp.json'), 'utf8');
   const icp = JSON.parse(content);
 
-  if (!Array.isArray(icp.regions) || !Array.isArray(icp.segments) || !Array.isArray(icp.services)) {
-    throw new Error('config/icp.json deve conter regions, segments e services como listas');
+  if (!Array.isArray(icp.regions) || !Array.isArray(icp.segments) || !Array.isArray(icp.segmentKeywords) || !Array.isArray(icp.services)) {
+    throw new Error('config/icp.json deve conter regions, segments, segmentKeywords e services como listas');
   }
   if (!Number.isInteger(icp.minimumScore) || icp.minimumScore < 0 || icp.minimumScore > 100) {
     throw new Error('config/icp.json deve conter minimumScore entre 0 e 100');

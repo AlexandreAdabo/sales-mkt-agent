@@ -118,7 +118,7 @@ Informe tokens e chaves sem aspas ou delimitadores como `<` e `>`. O processo re
 Para uma validação inteiramente local, defina `DISCORD_ENABLED=false`. Nesse modo os relatórios são persistidos e registrados no console, mas não enviados.
 
 O ICP é lido em toda execução a partir de `config/icp.json`; alterações não exigem recompilar a aplicação.
-`minimumScore` define o corte mínimo de aderência e `dailyLeadLimit` limita quantos leads são persistidos e apresentados em cada execução.
+`minimumScore` define o corte mínimo de aderência e `dailyLeadLimit` limita quantos leads são persistidos e apresentados em cada execução. O ICP atual procura cinco clínicas odontológicas, escritórios de contabilidade ou escritórios de advocacia por rodada, com score mínimo 75. `segmentKeywords` reconhece variações de segmento vindas do CNAE sem aceitar empresas fora desses nichos.
 
 ## Configuração do Discord
 
@@ -197,11 +197,11 @@ npm run job:leads
 npm run job:content
 ```
 
-O SearchClient mock possui 25 empresas fictícias com portes, sinais e qualidade variados. Cada execução persiste até `dailyLeadLimit` leads que alcancem `minimumScore`; leads já persistidos não são reapresentados. As ideias mock alternam temas e recebem edições posteriores para que o agendamento continue funcional sem repetir registros.
+O SearchClient mock possui empresas fictícias dos três segmentos do ICP, com portes, sinais e qualidade variados. Cada execução tenta preencher `dailyLeadLimit` com leads que alcancem `minimumScore`, analisando novos candidatos até completar a quantidade ou esgotar os resultados válidos; leads já persistidos não são reapresentados. As ideias mock alternam temas e recebem edições posteriores para que o agendamento continue funcional sem repetir registros.
 
 ## Como os agents funcionam
 
-O `OutboundAgent` carrega o ICP, busca candidatos, elimina registros conhecidos, pesquisa cada candidato, solicita análise e score, seleciona os dez melhores, persiste e envia ao Discord. A deduplicação prioriza CNPJ, depois domínio do site e por fim nome+cidade.
+O `OutboundAgent` carrega o ICP, busca candidatos, elimina registros conhecidos, aplica o pré-filtro de segmento, porte, região e sinais negativos, pesquisa e pontua candidatos até obter cinco aprovados, persiste e envia ao Discord. A deduplicação prioriza CNPJ, depois domínio do site e por fim nome+cidade.
 
 O `ContentAgent` carrega o ICP e até mil ideias anteriores, gera uma proposta para cada frente — DoGym, Quanto Deu AI e Profissional/Freelance —, elimina repetições, persiste e envia ao Discord. Cada ideia mantém sua frente identificada no SQLite e na mensagem do canal `#conteudo`.
 
@@ -261,7 +261,7 @@ O job também passa explicitamente o timezone ao `node-cron`, e o PM2 define `TZ
 - [ ] `npm test` valida health check, persistência e deduplicação.
 - [ ] `npm start` conecta o bot e registra os dois crons.
 - [ ] `GET /health` retorna HTTP 200 com o contrato esperado.
-- [ ] `npm run job:leads` envia dez empresas fictícias ao `#leads` no primeiro banco limpo.
+- [ ] `npm run job:leads` envia cinco empresas fictícias dentro do ICP ao `#leads` no primeiro banco limpo.
 - [ ] `npm run job:content` envia três ideias ao `#conteudo`.
 - [ ] Uma mensagem no `#agente` consulta um lead ou ideia existente.
 - [ ] Reiniciar a aplicação não cria tabelas duplicadas nem reapresenta leads salvos.

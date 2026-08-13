@@ -11,7 +11,7 @@ test('SearchService usa o mock para buscar e pesquisar candidatos do ICP', async
   const candidates = await service.findCandidates(icp);
   const researched = await service.researchCompany(candidates[0]);
 
-  assert.equal(candidates.length, 25);
+  assert.equal(candidates.length, 17);
   assert.ok(candidates.every((candidate) => candidate.source === 'mock'));
   assert.ok(candidates.filter((candidate) => candidate.website).every((candidate) => candidate.website.endsWith('.example')));
   assert.equal(researched.externalId, candidates[0].externalId);
@@ -24,11 +24,11 @@ test('SearchService mock respeita regiões e segmentos informados', async () => 
 
   const candidates = await service.findCandidates({
     regions: ['Mauá - SP'],
-    segments: ['indústria']
+    segments: ['clínica odontológica']
   });
 
-  assert.equal(candidates.length, 1);
-  assert.equal(candidates[0].companyName, 'MetalNova Componentes');
+  assert.equal(candidates.length, 3);
+  assert.equal(candidates[0].companyName, 'Odonto Mauá');
   assert.equal(candidates[0].city, 'Mauá');
-  assert.equal(candidates[0].segment, 'indústria');
+  assert.equal(candidates[0].segment, 'clínica odontológica');
 });

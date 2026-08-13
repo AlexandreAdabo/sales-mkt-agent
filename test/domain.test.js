@@ -48,6 +48,24 @@ test('deduplicação em lote trata variações do domínio como a mesma empresa'
   assert.deepEqual(service.filterDuplicates(candidates), [candidates[0]]);
 });
 
+test('pré-filtro aceita variações CNAE do ICP e rejeita candidatos incompatíveis', () => {
+  const leadRepository = { listIdentities: () => [], isDuplicate: () => false };
+  const service = createLeadService({ leadRepository, searchService: {}, aiService: {} });
+  const icp = {
+    regions: ['Mauá - SP'],
+    segments: ['clínica odontológica', 'escritório de contabilidade', 'escritório de advocacia'],
+    segmentKeywords: ['odontolog', 'contábil', 'advocatícios'],
+    companySize: { minEmployees: 10, maxEmployees: 300 },
+    negativeSignals: ['empresa encerrada']
+  };
+
+  assert.equal(service.matchesIcp({ segment: 'Atividade odontológica', city: 'Mauá', employeeCount: 20 }, icp), true);
+  assert.equal(service.matchesIcp({ segment: 'Serviços advocatícios', city: 'Mauá', employeeCount: 20 }, icp), true);
+  assert.equal(service.matchesIcp({ segment: 'Comércio varejista', city: 'Mauá', employeeCount: 20 }, icp), false);
+  assert.equal(service.matchesIcp({ segment: 'Atividade odontológica', city: 'Mauá', employeeCount: 2 }, icp), false);
+  assert.equal(service.matchesIcp({ segment: 'Atividade odontológica', city: 'Mauá', employeeCount: 20, negativeSignals: ['empresa encerrada'] }, icp), false);
+});
+
 test('inserção no SQLite impede reapresentação por variação de domínio', () => {
   const directory = mkdtempSync(path.join(os.tmpdir(), 'sales-mkt-domain-'));
   const database = createDatabase(path.join(directory, 'test.sqlite'));

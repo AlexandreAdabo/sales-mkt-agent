@@ -8,6 +8,10 @@ function identity(candidate) {
   return { cnpj, domain, nameCity };
 }
 
+function normalized(value) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
+}
+
 export function createLeadService({ leadRepository, searchService, aiService }) {
   async function findCandidates(icp) {
     return searchService.findCandidates(icp);
@@ -34,6 +38,21 @@ export function createLeadService({ leadRepository, searchService, aiService }) 
     return searchService.researchCompany(candidate);
   }
 
+  function matchesIcp(candidate, icp) {
+    if (candidate.segment) {
+      const segment = normalized(candidate.segment);
+      const matchesSegment = [...icp.segments, ...icp.segmentKeywords]
+        .some((term) => segment.includes(normalized(term)));
+      if (!matchesSegment) return false;
+    }
+    if (candidate.employeeCount != null && (
+      candidate.employeeCount < icp.companySize.minEmployees
+      || candidate.employeeCount > icp.companySize.maxEmployees
+    )) return false;
+    if (candidate.city && !icp.regions.some((region) => region.startsWith(candidate.city))) return false;
+    return !(candidate.negativeSignals ?? []).some((signal) => icp.negativeSignals.includes(signal));
+  }
+
   async function scoreLead(researchedCompany, icp) {
     const analysis = await aiService.analyzeLead(researchedCompany, icp);
     return {
@@ -52,5 +71,5 @@ export function createLeadService({ leadRepository, searchService, aiService }) 
     return leadRepository.saveMany(leads);
   }
 
-  return { findCandidates, filterDuplicates, researchCompany, scoreLead, selectTopLeads, saveLeads };
+  return { findCandidates, filterDuplicates, researchCompany, matchesIcp, scoreLead, selectTopLeads, saveLeads };
 }

@@ -5,6 +5,7 @@ export function createOutboundAgent({ leadService, leadEnrichmentService, leadRe
   const findCandidates = (icp) => leadService.findCandidates(icp);
   const filterDuplicates = (candidates) => leadService.filterDuplicates(candidates);
   const researchCompany = (candidate) => leadService.researchCompany(candidate);
+  const matchesIcp = (candidate, icp) => leadService.matchesIcp(candidate, icp);
   const scoreLead = (company, icp) => leadService.scoreLead(company, icp);
   const selectTopLeads = (leads, limit) => leadService.selectTopLeads(leads, limit);
   const saveLeads = (leads) => leadService.saveLeads(leads);
@@ -22,14 +23,19 @@ export function createOutboundAgent({ leadService, leadEnrichmentService, leadRe
       ? Math.min(icp.search?.maxCandidatesForAI ?? newCandidates.length, icp.search?.maxCandidatesForEnrichment ?? newCandidates.length)
       : newCandidates.length;
     const candidatesForAI = newCandidates.slice(0, candidateLimit);
-    lastRunStats.candidatesEnriched = candidatesForAI.length;
-    logger.info(`${candidatesForAI.length} candidatos selecionados para analise por IA`);
+    logger.info(`${candidatesForAI.length} candidatos disponíveis para análise por IA`);
     const analyzed = [];
 
     for (const candidate of candidatesForAI) {
+      if (analyzed.filter((lead) => lead.score >= icp.minimumScore).length >= icp.dailyLeadLimit) break;
       try {
         lastRunStats.stage = 'TAVILY_EXTRACT';
         const enriched = await leadEnrichmentService.enrichLead(candidate);
+        lastRunStats.candidatesEnriched += 1;
+        if (!matchesIcp(enriched, icp)) {
+          logger.info(`Candidato ${candidate.companyName} descartado pelo pré-filtro do ICP`);
+          continue;
+        }
         lastRunStats.stage = 'OPENAI_ANALYSIS';
         const researched = await researchCompany(enriched);
         analyzed.push(await scoreLead(researched, icp));
@@ -56,5 +62,5 @@ export function createOutboundAgent({ leadService, leadEnrichmentService, leadRe
   }
 
   let lastRunStats = { candidatesFound: 0, candidatesEnriched: 0, leadsCreated: 0, stage: 'PENDING' };
-  return { run, getLastRunStats: () => lastRunStats, findCandidates, filterDuplicates, researchCompany, scoreLead, selectTopLeads, saveLeads, sendToDiscord };
+  return { run, getLastRunStats: () => lastRunStats, findCandidates, filterDuplicates, researchCompany, matchesIcp, scoreLead, selectTopLeads, saveLeads, sendToDiscord };
 }
