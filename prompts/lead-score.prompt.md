@@ -34,3 +34,5 @@ Regras:
 - quando houver pouca informação, penalize o score
 - não trate termos genéricos como prova de que a empresa pertence ao segmento
 - seja objetivo
+- a `approach_suggestion` deve indicar explicitamente por qual meio abordar o lead, seguindo a prioridade WhatsApp > telefone > e-mail > site, usando somente os meios que estiverem de fato preenchidos (não nulos) para aquele lead
+- se nenhum meio de contato direto (whatsapp, telefone, e-mail) existir, oriente a abordagem via site/formulário

@@ -20,19 +20,24 @@ test('formatador gera relatório de leads pronto para o Discord', () => {
   const service = createLeadReportService();
   const report = service.format([{
     companyName: 'Empresa Teste',
-    city: 'Mauá',
-    state: 'SP',
-    segment: 'indústria',
+    whatsapp: '11999999999',
     website: 'https://empresa.example',
-    score: 91,
-    automationOpportunities: ['Automatizar pedidos'],
-    softwareOpportunities: ['Integrar ERP'],
-    scoreReason: 'Alta aderência ao ICP',
-    approachSuggestion: 'Contato consultivo'
+    approachSuggestion: 'Contato consultivo via WhatsApp'
   }]);
 
   assert.match(report, /🎯 \*\*Leads/);
   assert.match(report, /Empresa Teste/);
-  assert.match(report, /Score ICP: 91\/100/);
-  assert.match(report, /Automatizar pedidos; Integrar ERP/);
+  assert.match(report, /WhatsApp: 11999999999/);
+  assert.match(report, /Contato consultivo via WhatsApp/);
+});
+
+test('formatador orienta abordagem via site quando não há contato direto', () => {
+  const service = createLeadReportService();
+  const report = service.format([{
+    companyName: 'Empresa Sem Contato',
+    website: null,
+    approachSuggestion: 'Abordar via formulário do site'
+  }]);
+
+  assert.match(report, /Nenhum meio direto — abordar via site\/formulário/);
 });

@@ -9,6 +9,7 @@ export const leadAnalysisJsonSchema = {
     website: nullableString,
     phone: nullableString,
     whatsapp: nullableString,
+    email: nullableString,
     city: nullableString,
     state: nullableString,
     segment: nullableString,
@@ -22,7 +23,7 @@ export const leadAnalysisJsonSchema = {
     approachSuggestion: { type: 'string' }
   },
   required: [
-    'companyName', 'cnpj', 'website', 'phone', 'whatsapp', 'city', 'state',
+    'companyName', 'cnpj', 'website', 'phone', 'whatsapp', 'email', 'city', 'state',
     'segment', 'description', 'companySize', 'possiblePains',
     'automationOpportunities', 'softwareOpportunities', 'score',
     'scoreReason', 'approachSuggestion'
