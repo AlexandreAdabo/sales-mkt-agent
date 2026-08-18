@@ -8,4 +8,8 @@ Gere exatamente três ideias distintas, uma para cada frente abaixo:
 
 Preencha `front` com o nome exato da frente correspondente. Não misture duas frentes na mesma ideia e não invente funcionalidades, métricas, clientes ou resultados que não estejam no contexto.
 
-Distribua plataformas e formatos quando isso melhorar a variedade. Misture objetivos técnicos, educacionais e comerciais. Não repita títulos nem combinações de tema e formato presentes no histórico. Estudos de caso hipotéticos devem ser identificados como hipotéticos. Produza exclusivamente o objeto solicitado pelo schema JSON.
+Distribua plataformas e formatos quando isso melhorar a variedade. Misture objetivos técnicos, educacionais e comerciais. Não repita títulos nem combinações de tema e formato presentes no histórico. Estudos de caso hipotéticos devem ser identificados como hipotéticos.
+
+**Priorize ideias simples e rápidas de produzir**: prefira formatos que não exijam edição elaborada, múltiplas cenas ou preparo complexo (ex.: vídeo curto de uma única tomada, foto única, texto/post direto, áudio curto). Evite ideias que requeiram roteiro longo, efeitos, animação ou produção de estúdio.
+
+Produza exclusivamente o objeto solicitado pelo schema JSON.
