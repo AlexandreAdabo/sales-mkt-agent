@@ -18,18 +18,26 @@
     "maxCandidatesForEnrichment": 30
   },
   "segments": [
-    "clínica odontológica",
-    "escritório de contabilidade",
-    "escritório de advocacia"
+    "software house",
+    "consultoria de software",
+    "consultoria de TI",
+    "agência de desenvolvimento de software",
+    "agência de desenvolvimento web",
+    "agência de marketing digital",
+    "agência de marketing"
   ],
   "segmentKeywords": [
-    "odontolog",
-    "dentári",
-    "contabil",
-    "contábil",
-    "advocacia",
-    "advocatícios",
-    "jurídico"
+    "software house",
+    "desenvolvimento de software",
+    "desenvolvimento web",
+    "fábrica de software",
+    "consultoria de ti",
+    "consultoria em tecnologia",
+    "agência digital",
+    "agência de marketing",
+    "marketing digital",
+    "outsourcing de ti",
+    "squad de desenvolvimento"
   ],
   "services": [
     "automação de processos",
@@ -39,25 +47,25 @@
     "modernização de sistemas legados",
     "APIs",
     "ERP",
-    "sistemas internos"
+    "sistemas internos",
+    "outsourcing / squad de desenvolvimento sob demanda",
+    "automação de marketing e relatórios"
   ],
   "positiveSignals": [
-    "processos manuais",
-    "uso intenso de planilhas",
-    "sistemas legados",
-    "múltiplos sistemas sem integração",
-    "alto volume de agendamentos ou atendimentos",
-    "alto volume de documentos e prazos",
-    "operação administrativa relevante",
-    "empresa em crescimento",
-    "processos repetitivos"
+    "equipe interna de desenvolvimento sobrecarregada",
+    "terceirização de demanda técnica (outsourcing/squad)",
+    "alto volume de projetos ou clientes em carteira",
+    "necessidade de automação de processos internos (relatórios, onboarding, faturamento)",
+    "empresa em crescimento acelerado",
+    "stack de tecnologia madura, indicando investimento em TI",
+    "portfólio visível de projetos de software ou marketing digital"
   ],
   "negativeSignals": [
     "empresa encerrada",
     "empresa sem presença digital mínima",
-    "profissional autônomo",
-    "consultório individual",
+    "freelancer ou profissional autônomo individual",
     "empresa fora dos segmentos do ICP",
-    "microempresa muito pequena sem operação relevante"
+    "microempresa muito pequena sem operação relevante",
+    "agência apenas de branding/design sem componente técnico"
   ]
 }
