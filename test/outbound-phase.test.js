@@ -27,8 +27,8 @@ test('formatador gera relatório de leads pronto para o Discord', () => {
 
   assert.match(report, /🎯 \*\*Leads/);
   assert.match(report, /Empresa Teste/);
-  assert.match(report, /WhatsApp: 11999999999/);
-  assert.match(report, /Contato consultivo via WhatsApp/);
+  assert.match(report, /https:\/\/wa\.me\/5511999999999\?text=/);
+  assert.match(report, new RegExp(encodeURIComponent('Contato consultivo via WhatsApp')));
 });
 
 test('formatador orienta abordagem via site quando não há contato direto', () => {
