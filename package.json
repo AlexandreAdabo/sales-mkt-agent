@@ -11,6 +11,10 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "pm2:start": "pm2 start src/server.js --name sales-mkt-agent",
+    "pm2:stop": "pm2 stop sales-mkt-agent",
+    "pm2:restart": "pm2 restart sales-mkt-agent",
+    "pm2:logs": "pm2 logs sales-mkt-agent",
     "job:leads": "node src/scripts/run-leads.js",
     "job:content": "node src/scripts/run-content.js",
     "db:init": "node src/scripts/init-db.js",
