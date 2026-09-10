@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "displayName": "Desenvolvimento de Nova Funcionalidade",
+    "filename": "os-desenvolvimento-funcionalidade.docx"
+  },
+  {
+    "id": 2,
+    "displayName": "Correção de Bug / Manutenção",
+    "filename": "os-correcao-manutencao.docx"
+  },
+  {
+    "id": 3,
+    "displayName": "Consultoria / Suporte Técnico",
+    "filename": "os-consultoria-suporte.docx"
+  }
+]

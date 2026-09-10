@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
+import { AttachmentBuilder, Client, Events, GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { logger } from '../../utils/logger.js';
 
 const MESSAGE_LIMIT = 1900;
@@ -38,24 +38,46 @@ export function createDiscordClient(env) {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
   });
   let messageHandler = null;
+  let documentMessageHandler = null;
 
   client.on(Events.MessageCreate, async (message) => {
-    if (message.author.bot || message.channelId !== env.discordAgentChannelId || !messageHandler) return;
+    if (message.author.bot) return;
 
-    try {
-      const response = await messageHandler({
-        content: message.content,
-        userId: message.author.id,
-        channelId: message.channelId,
-        guildId: message.guildId
-      });
-      await sendMessage(env.discordAgentChannelId, response);
-    } catch (error) {
-      logger.error('Erro ao processar mensagem do canal #agente', error);
-      await sendMessage(env.discordAgentChannelId, 'Não consegui processar sua mensagem agora. Tente novamente em instantes.').catch(() => undefined);
-      await sendLog('Falha ao processar uma mensagem no canal #agente. Consulte os logs da aplicação.').catch((logError) => {
-        logger.error('Não foi possível enviar o erro ao canal #logs', logError);
-      });
+    if (message.channelId === env.discordAgentChannelId && messageHandler) {
+      try {
+        const response = await messageHandler({
+          content: message.content,
+          userId: message.author.id,
+          channelId: message.channelId,
+          guildId: message.guildId
+        });
+        await sendMessage(env.discordAgentChannelId, response);
+      } catch (error) {
+        logger.error('Erro ao processar mensagem do canal #agente', error);
+        await sendMessage(env.discordAgentChannelId, 'Não consegui processar sua mensagem agora. Tente novamente em instantes.').catch(() => undefined);
+        await sendLog('Falha ao processar uma mensagem no canal #agente. Consulte os logs da aplicação.').catch((logError) => {
+          logger.error('Não foi possível enviar o erro ao canal #logs', logError);
+        });
+      }
+      return;
+    }
+
+    if (message.channelId === env.discordTemplateChannelId && documentMessageHandler) {
+      try {
+        const response = await documentMessageHandler({
+          content: message.content,
+          userId: message.author.id,
+          channelId: message.channelId,
+          guildId: message.guildId
+        });
+        if (response) await sendMessage(env.discordTemplateChannelId, response);
+      } catch (error) {
+        logger.error('Erro ao processar mensagem do canal de documentos', error);
+        await sendMessage(env.discordTemplateChannelId, 'Não consegui processar sua mensagem agora. Tente novamente em instantes.').catch(() => undefined);
+        await sendLog('Falha ao processar uma mensagem no canal de documentos. Consulte os logs da aplicação.').catch((logError) => {
+          logger.error('Não foi possível enviar o erro ao canal #logs', logError);
+        });
+      }
     }
   });
 
@@ -72,7 +94,8 @@ export function createDiscordClient(env) {
       ['leads', env.discordLeadsChannelId],
       ['conteúdo', env.discordContentChannelId],
       ['agente', env.discordAgentChannelId],
-      ['logs', env.discordLogsChannelId]
+      ['logs', env.discordLogsChannelId],
+      ['documentos', env.discordTemplateChannelId]
     ].filter(([, channelId]) => channelId);
 
     for (const [name, channelId] of channels) {
@@ -120,15 +143,35 @@ export function createDiscordClient(env) {
     await sendMessage(env.discordLogsChannelId, content);
   }
 
+  async function sendFile(channelId, { buffer, filename }) {
+    const channel = await getTextChannel(channelId);
+    const attachment = new AttachmentBuilder(buffer, { name: filename });
+    await channel.send({ files: [attachment] });
+  }
+
   function setMessageHandler(handler) {
     messageHandler = handler;
+  }
+
+  function setDocumentMessageHandler(handler) {
+    documentMessageHandler = handler;
   }
 
   function destroy() {
     client.destroy();
   }
 
-  return { connect, destroy, sendMessage, sendLeadReport, sendContentIdeas, sendLog, setMessageHandler };
+  return {
+    connect,
+    destroy,
+    sendMessage,
+    sendLeadReport,
+    sendContentIdeas,
+    sendLog,
+    sendFile,
+    setMessageHandler,
+    setDocumentMessageHandler
+  };
 }
 
 function createDisabledDiscordClient() {
@@ -140,7 +183,9 @@ function createDisabledDiscordClient() {
     sendLeadReport: async () => logger.info('Discord desabilitado; relatório não enviado'),
     sendContentIdeas: async (ideas) => logger.info('Discord desabilitado; ideias não enviadas', { ideas: ideas.length }),
     sendLog: skip,
-    setMessageHandler: () => undefined
+    sendFile: skip,
+    setMessageHandler: () => undefined,
+    setDocumentMessageHandler: () => undefined
   };
 }
 

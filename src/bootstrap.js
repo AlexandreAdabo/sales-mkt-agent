@@ -1,4 +1,5 @@
 import { createContentAgent } from './agents/content.agent.js';
+import { createDocumentAgent } from './agents/document.agent.js';
 import { createOutboundAgent } from './agents/outbound.agent.js';
 import { createRouterAgent } from './agents/router.agent.js';
 import { createDatabase } from './database/database.js';
@@ -21,6 +22,9 @@ import { createConversationService } from './services/conversation.service.js';
 import { createLeadService } from './services/lead.service.js';
 import { createLeadEnrichmentService } from './services/lead-enrichment.service.js';
 import { createLeadReportService } from './services/lead-report.service.js';
+import { createDocumentTemplateService } from './services/document-template.service.js';
+import { createDocumentSessionService } from './services/document-session.service.js';
+import { createDocumentRenderService } from './services/document-render.service.js';
 import { createSearchService } from './services/search.service.js';
 
 export function createContainer(env) {
@@ -68,6 +72,16 @@ export function createContainer(env) {
   const contentIdeasJob = createContentIdeasJob({ contentAgent, discordClient });
 
   discordClient.setMessageHandler(routerAgent.handle);
+
+  if (env.documentGeneratorEnabled) {
+    const documentAgent = createDocumentAgent({
+      documentTemplateService: createDocumentTemplateService(),
+      documentSessionService: createDocumentSessionService(),
+      documentRenderService: createDocumentRenderService(),
+      discordClient
+    });
+    discordClient.setDocumentMessageHandler(documentAgent.handle);
+  }
 
   return {
     database,

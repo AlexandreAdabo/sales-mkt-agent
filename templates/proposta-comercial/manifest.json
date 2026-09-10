@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "displayName": "Desenvolvimento de Novo Sistema/Funcionalidade",
+    "filename": "proposta-desenvolvimento-sistema.docx"
+  },
+  {
+    "id": 2,
+    "displayName": "Manutenção Evolutiva / Suporte Mensal",
+    "filename": "proposta-manutencao-suporte.docx"
+  },
+  {
+    "id": 3,
+    "displayName": "Consultoria Técnica / Diagnóstico",
+    "filename": "proposta-consultoria-tecnica.docx"
+  }
+]

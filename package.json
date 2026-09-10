@@ -21,14 +21,17 @@
     "test:openai": "node scripts/test-openai.js",
     "test:discord": "node scripts/test-discord.js",
     "test:tavily": "node src/scripts/test-tavily.js",
+    "test:document-convert": "node src/scripts/test-document-convert.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
     "discord.js": "^14.22.1",
+    "docxtemplater": "^3.69.3",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "node-cron": "^4.2.1",
-    "openai": "^6.0.0"
+    "openai": "^6.0.0",
+    "pizzip": "^3.2.0"
   }
 }

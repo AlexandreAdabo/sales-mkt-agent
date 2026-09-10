@@ -36,7 +36,9 @@ export function loadEnv({ requireDiscord = true, requireAI = true } = {}) {
     discordLeadsChannelId: process.env.DISCORD_LEADS_CHANNEL_ID || null,
     discordContentChannelId: process.env.DISCORD_CONTENT_CHANNEL_ID || null,
     discordAgentChannelId: process.env.DISCORD_AGENT_CHANNEL_ID || null,
-    discordLogsChannelId: process.env.DISCORD_LOGS_CHANNEL_ID || null
+    discordLogsChannelId: process.env.DISCORD_LOGS_CHANNEL_ID || null,
+    documentGeneratorEnabled: booleanValue(process.env.DOCUMENT_GENERATOR_ENABLED, false),
+    discordTemplateChannelId: process.env.DISCORD_TEMPLATE_CHANNEL_ID || null
   };
 
   validateEnv(env, { requireDiscord, requireAI });
@@ -100,6 +102,13 @@ function validateEnv(env, { requireDiscord, requireAI }) {
 
     if (env.discordDashboardChannelId && !/^\d{17,20}$/.test(env.discordDashboardChannelId)) {
       errors.push('DISCORD_DASHBOARD_CHANNEL_ID deve conter um ID numérico válido do Discord');
+    }
+
+    if (env.documentGeneratorEnabled) {
+      if (!env.discordTemplateChannelId) errors.push('DISCORD_TEMPLATE_CHANNEL_ID é obrigatória quando DOCUMENT_GENERATOR_ENABLED=true');
+      if (env.discordTemplateChannelId && !/^\d{17,20}$/.test(env.discordTemplateChannelId)) {
+        errors.push('DISCORD_TEMPLATE_CHANNEL_ID deve conter um ID numérico válido do Discord');
+      }
     }
   }
 
