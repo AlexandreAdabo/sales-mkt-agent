@@ -12,6 +12,15 @@ const CONVERT_TIMEOUT_MS = 30000;
 
 export class DocumentConversionError extends Error {}
 
+function splitMultilineValues(values) {
+  return Object.fromEntries(
+    Object.entries(values).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? value.replace(/\s*;\s*/g, '\n') : value
+    ])
+  );
+}
+
 export function createDocumentRenderService() {
   async function renderDocx(templatePath, values) {
     const buffer = await readFile(templatePath);
@@ -22,7 +31,7 @@ export function createDocumentRenderService() {
       linebreaks: true
     });
 
-    doc.render(values);
+    doc.render(splitMultilineValues(values));
     return doc.getZip().generate({ type: 'nodebuffer' });
   }
 

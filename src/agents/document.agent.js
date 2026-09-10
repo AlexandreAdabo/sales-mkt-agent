@@ -1,7 +1,20 @@
+import { DOCUMENT_CATEGORIES } from '../config/document-categories.js';
 import { logger } from '../utils/logger.js';
 import { DocumentConversionError } from '../services/document-render.service.js';
 
 const MAX_DISCORD_UPLOAD_BYTES = 8 * 1024 * 1024;
+
+function buildOutputFilename(session) {
+  const category = DOCUMENT_CATEGORIES.find((entry) => entry.folder === session.categoryFolder);
+  const number = category ? session.values[category.numberField] : null;
+
+  if (category && number) {
+    const sanitized = String(number).trim().replace(/[^\p{L}\p{N}-]+/gu, '-');
+    return `${category.filePrefix}-${sanitized}.pdf`;
+  }
+
+  return `${session.templateName.replace(/\s+/g, '-')}.pdf`;
+}
 
 export function createDocumentAgent({ documentTemplateService, documentSessionService, documentRenderService, discordClient }) {
   async function handle({ content, userId, channelId }) {
@@ -51,7 +64,7 @@ export function createDocumentAgent({ documentTemplateService, documentSessionSe
       `**Informações do modelo "[${entry.categoryDisplayName}] ${entry.displayName}"**`,
       ...lines,
       '',
-      'Responda com um campo por linha, no formato `Campo - valor`.'
+      'Responda com um campo por linha, no formato `Campo - valor`. Para campos com múltiplos itens (ex: atividades, observações), separe com `;`.'
     ].join('\n');
   }
 
@@ -88,7 +101,7 @@ export function createDocumentAgent({ documentTemplateService, documentSessionSe
 
       await discordClient.sendFile(channelId, {
         buffer: pdfBuffer,
-        filename: `${session.templateName.replace(/\s+/g, '-')}.pdf`
+        filename: buildOutputFilename(session)
       });
       documentSessionService.clearSession(channelId, userId);
       return [...warnings, 'Documento gerado com sucesso.'].filter(Boolean).join('\n');
